@@ -337,7 +337,7 @@ int fp_info_hdu (fitsfile *infptr)
 
             } else {
                 sprintf (msg, "  %d OTHER", hdupos); fp_msg (msg);
-                sprintf (msg, " SUMS=%lu/%lu", (unsigned long) (~((int) hdusum), datasum)); fp_msg (msg);
+                sprintf (msg, " SUMS=%lu/%lu",   (unsigned long) (~((int) hdusum)), datasum); fp_msg (msg);
                 sprintf (msg, " %s\n", val); fp_msg (msg);
             }
 
@@ -1383,9 +1383,10 @@ int fp_pack_hdu (fitsfile *infptr, fitsfile *outfptr, fpstate fpvar,
         if (!fits_read_key(infptr, TSTRING, "FZALGOR", fzalgor, NULL, &tstatus) ) {
 	    if (!strcmp(fzalgor, "NONE") || !strcmp(fzalgor, "none") ) {
  	        fits_copy_hdu (infptr, outfptr, 0, &stat);
+
+	        *status = stat;
+	        return(0);
             }
-	    *status = stat;
-	    return(0);
 	}
 
         /* =============================================================== */

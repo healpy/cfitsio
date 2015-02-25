@@ -15,7 +15,7 @@ AC_CANONICAL_TARGET([])
 # CFITSIO Version Numbers:
 #--------------------------------------------------------------------
 AC_SUBST(CFITSIO_MAJOR,3)
-AC_SUBST(CFITSIO_MINOR,36)
+AC_SUBST(CFITSIO_MINOR,37)
 # Increment soname each time the interface changes:
 AC_SUBST(CFITSIO_SONAME,2)
 
@@ -78,6 +78,24 @@ AC_ARG_WITH(
         fi
         AC_DEFINE(HAVE_GSIFTP,1,[Define if you want Globus Toolkit gsiftp protocol support])
     fi
+  ]
+)
+
+AC_ARG_WITH(
+  bzip2,
+  [AS_HELP_STRING([--with-bzip2[[=PATH]]],[Enable bzip2. Optional path to the header file bzlib.h])],
+  [ if test "x$withval" != "xno"; then
+        if test "x$withval" != "xyes" ; then
+            CFLAGS="$CFLAGS -I${withval}"
+        fi
+        AC_CHECK_HEADERS(bzlib.h)
+        HAVE_BZIP2=yes
+        AC_DEFINE(HAVE_BZIP2,1,[Define if you want bzip2 read support])
+    fi
+  ],
+  [AC_CHECK_HEADERS(bzlib.h)
+   HAVE_BZIP2=yes
+   AC_DEFINE(HAVE_BZIP2,1,[Define if you want bzip2 read support])
   ]
 )
 

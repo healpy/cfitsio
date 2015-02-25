@@ -6,17 +6,14 @@ OPTION (BUILD_SHARED_LIBS "Build Shared Libraries" ON)
 OPTION (USE_PTHREADS "Thread-safe build (using pthreads)" OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}")
+set (LIB_DESTINATION "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}")
+set (INCLUDE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/include/")
 
 # Define project version
 SET(${PROJECT_NAME}_MAJOR_VERSION 3)
 SET(${PROJECT_NAME}_MINOR_VERSION 36)
 SET(${PROJECT_NAME}_VERSION ${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION})
-
-IF(WIN32)
-    SET(LIB_NAME cfitsio)
-ELSE()
-    SET(LIB_NAME libcfitsio)
-ENDIF()
+SET(LIB_NAME cfitsio)
 
 # Define
 IF(MSVC)
@@ -53,18 +50,17 @@ SET(SRC_FILES
     pliocomp.c fits_hcompress.c fits_hdecompress.c zlib/zuncompress.c
     zlib/zcompress.c zlib/adler32.c zlib/crc32.c zlib/inffast.c
     zlib/inftrees.c zlib/trees.c zlib/zutil.c zlib/deflate.c
-    zlib/infback.c zlib/inflate.c zlib/uncompr.c
+    zlib/infback.c zlib/inflate.c zlib/uncompr.c simplerng.c
     f77_wrap1.c f77_wrap2.c f77_wrap3.c f77_wrap4.c
 )
 
 ADD_LIBRARY(${LIB_NAME} ${LIB_TYPE} ${H_FILES} ${SRC_FILES})
-TARGET_LINK_LIBRARIES(${LIB_NAME}
-    ${PTHREADS_LIBRARY}
+TARGET_LINK_LIBRARIES(${LIB_NAME} m ${PTHREADS_LIBRARY}
 )
 
-SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES
-    VERSION ${PROJECT_NAME}_VERSION
-)
+SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES VERSION ${${PROJECT_NAME}_VERSION} SOVERSION ${${PROJECT_NAME}_MAJOR_VERSION})
+install(TARGETS ${LIB_NAME} LIBRARY DESTINATION ${LIB_DESTINATION})
+install(FILES ${H_FILES} DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 ENABLE_TESTING()
 
