@@ -105,14 +105,12 @@ Web or via anonymous ftp from:
 \end{verbatim}
 
 Any questions, bug reports, or suggested enhancements related to the CFITSIO
-package should be sent to the primary author:
+package should be sent to the FTOOLS Help Desk at the HEASARC:
 
 \begin{verbatim}
-        Dr. William Pence                 Telephone:  (301) 286-4599
-        HEASARC, Code 662                 E-mail: William.D.Pence@nasa.gov
-        NASA/Goddard Space Flight Center
-        Greenbelt, MD 20771, USA
+        http://heasarc.gsfc.nasa.gov/cgi-bin/ftoolshelp
 \end{verbatim}
+
 This User's Guide assumes that readers already have a general
 understanding of the definition and structure of FITS format files.
 Further information about FITS formats is available from the FITS Support
@@ -1110,7 +1108,7 @@ these features:
 Note that the non-standard TFORM values for the 3 columns, `U' and `V',
 tell CFITSIO to write the keywords appropriate for unsigned 16-bit and
 unsigned 32-bit integers, respectively (i.e., TFORMn = '1I' and TZEROn
-= 32678 for unsigned 16-bit integers, and TFORMn = '1J' and TZEROn =
+= 32768 for unsigned 16-bit integers, and TFORMn = '1J' and TZEROn =
 2147483648 for unsigned 32-bit integers).  The 'S' TFORMn value tells
 CFITSIO to write the keywords appropriate for a signed 8-bit byte column
 with TFORMn = '1B' and TZEROn = -128.  The calls to fits\_write\_col
