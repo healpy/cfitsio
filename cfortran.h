@@ -71,19 +71,29 @@
 
 #if (_MSC_VER < 1300)   /* versions earlier than V7.0 do not have 'long long' */
     typedef __int64 LONGLONG;
+    typedef unsigned __int64 ULONGLONG;
 #else                   /* newer versions do support 'long long' */
     typedef long long LONGLONG; 
+    typedef unsigned long long ULONGLONG; 
 #endif
 
 #elif defined( __BORLANDC__)  /* (WDP) for the free Borland compiler, in particular */
     typedef __int64 LONGLONG;
+    typedef unsigned __int64 ULONGLONG;
 #else
     typedef long long LONGLONG; 
+    typedef unsigned long long ULONGLONG; 
 #endif
 
 #define LONGLONG_TYPE
 #endif  
 
+/* Microsoft Visual C++ requires alternate form for static inline. */
+#if defined(_MSC_VER)   /* Microsoft Visual C++ */
+#define STIN static __inline
+#else
+#define STIN static inline
+#endif
 
 /* First prepare for the C compiler. */
 
@@ -614,9 +624,9 @@ typedef DSC$DESCRIPTOR_A(1) fstringvector;
 #define NUM_ELEM_ARG(B) *_2(A,B),_NUM_ELEM_ARG
 #define TERM_CHARS(A,B) A,B
 #ifndef __CF__KnR
-static int num_elem(char *strv, unsigned elem_len, int term_char, int num_term)
+STIN int num_elem(char *strv, unsigned elem_len, int term_char, int num_term)
 #else
-static int num_elem(      strv,          elem_len,     term_char,     num_term)
+STIN int num_elem(      strv,          elem_len,     term_char,     num_term)
                     char *strv; unsigned elem_len; int term_char; int num_term;
 #endif
 /* elem_len is the number of characters in each element of strv, the FORTRAN

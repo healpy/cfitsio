@@ -63,16 +63,23 @@ void fp_abort_output (fitsfile *infptr, fitsfile *outfptr, int stat)
 	int status = 0, hdunum;
 	char  msg[SZ_STR];
 
-	fits_file_name(infptr, tempfilename, &status);
-	fits_get_hdu_num(infptr, &hdunum);
-	
-        fits_close_file (infptr, &status);
+        if (infptr)
+        {
+	   fits_file_name(infptr, tempfilename, &status);
+	   fits_get_hdu_num(infptr, &hdunum);
 
-	sprintf(msg, "Error processing file: %s\n", tempfilename);
-	fp_msg (msg);
-	sprintf(msg, "  in HDU number %d\n", hdunum);
-	fp_msg (msg);
+           fits_close_file (infptr, &status);
 
+	   snprintf(msg, SZ_STR,"Error processing file: %s\n", tempfilename);
+	   fp_msg (msg);
+	   snprintf(msg, SZ_STR,"  in HDU number %d\n", hdunum);
+	   fp_msg (msg);
+        }
+        else
+        {
+           snprintf(msg, SZ_STR,"Error: Unable to process input file\n");
+           fp_msg(msg);
+        }
 	fits_report_error (stderr, stat);
 
 	if (outfptr) {
@@ -90,7 +97,7 @@ int fp_version (void)
 
         fp_msg (FPACK_VERSION);
         fits_get_version(&version);
-        sprintf(cfitsioversion, " CFITSIO version %5.3f", version);
+        snprintf(cfitsioversion, 40," CFITSIO version %5.3f", version);
         fp_msg(cfitsioversion);
         fp_msg ("\n");
         return(0);
@@ -116,7 +123,7 @@ int fp_tmpnam(char *suffix, char *rootname, char *tmpnam)
 {
 	/* create temporary file name */
 
-	int maxtry = 30, i1 = 0, ii;
+	int maxtry = 30, ii;
 
 	if (strlen(suffix) + strlen(rootname) > SZ_STR-5) {
 	    fp_msg ("Error: filename is too long to create tempory file\n"); exit (-1);
@@ -129,6 +136,13 @@ int fp_tmpnam(char *suffix, char *rootname, char *tmpnam)
 
         for (ii = 0; ii < maxtry; ii++) {
 		if (fp_access(tmpnam)) break;  /* good, the file does not exist */
+                if (strlen(tmpnam) > SZ_STR-2)
+                {
+		   fp_msg ("\nCould not create temporary file name:\n");
+		   fp_msg (tmpnam);
+		   fp_msg ("\n");
+		   exit (-1);
+                }
 		strcat(tmpnam, "x");  /* append an x to the name, and try again */
 	}
 
@@ -203,7 +217,8 @@ int fp_list (int argc, char *argv[], fpstate fpvar)
 	}
 
 	for (iarg=fpvar.firstfile; iarg < argc; iarg++) {
-	    strncpy (infits, argv[iarg], SZ_STR);
+	    strncpy (infits, argv[iarg], SZ_STR-1);
+            infits[SZ_STR-1]=0;
 
 	    if (strchr (infits, '[') || strchr (infits, ']')) {
 		fp_msg ("Error: section/extension notation not supported: ");
@@ -228,15 +243,15 @@ int fp_list (int argc, char *argv[], fpstate fpvar)
 	        fp_abort_output(infptr, NULL, stat);
 	    }
 
-            sprintf (msg, "# %s (", infits); fp_msg (msg);
+            snprintf (msg, SZ_STR,"# %s (", infits); fp_msg (msg);
 
 #if defined(_MSC_VER)
     /* Microsoft Visual C++ 6.0 uses '%I64d' syntax  for 8-byte integers */
-        sprintf(msg, "%I64d bytes)\n", sizell); fp_msg (msg);
+        snprintf(msg, SZ_STR,"%I64d bytes)\n", sizell); fp_msg (msg);
 #elif (USE_LL_SUFFIX == 1)
-        sprintf(msg, "%lld bytes)\n", sizell); fp_msg (msg);
+        snprintf(msg, SZ_STR,"%lld bytes)\n", sizell); fp_msg (msg);
 #else
-        sprintf(msg, "%ld bytes)\n", sizell); fp_msg (msg);
+        snprintf(msg, SZ_STR,"%ld bytes)\n", sizell); fp_msg (msg);
 #endif
 	    fp_info_hdu (infptr);
 
@@ -288,21 +303,21 @@ int fp_info_hdu (fitsfile *infptr)
             fits_get_chksum(infptr, &datasum, &hdusum, &stat);
 
 	    if (hdutype == IMAGE_HDU) {
-		sprintf (msg, "  %d IMAGE", hdupos); fp_msg (msg);
-                sprintf (msg, " SUMS=%lu/%lu", (unsigned long) (~((int) hdusum)), datasum); fp_msg (msg);
+		snprintf (msg, SZ_STR,"  %d IMAGE", hdupos); fp_msg (msg);
+                snprintf (msg, SZ_STR," SUMS=%lu/%lu", (unsigned long) (~((int) hdusum)), datasum); fp_msg (msg);
 
 		fits_get_img_param (infptr, 9, &bitpix, &naxis, naxes, &stat);
 
-                sprintf (msg, " BITPIX=%d", bitpix); fp_msg (msg);
+                snprintf (msg, SZ_STR," BITPIX=%d", bitpix); fp_msg (msg);
 
 		if (naxis == 0) {
-                    sprintf (msg, " [no_pixels]"); fp_msg (msg);
+                    snprintf (msg, SZ_STR," [no_pixels]"); fp_msg (msg);
 		} else if (naxis == 1) {
-		    sprintf (msg, " [%ld]", naxes[1]); fp_msg (msg);
+		    snprintf (msg, SZ_STR," [%ld]", naxes[1]); fp_msg (msg);
 		} else {
-		    sprintf (msg, " [%ld", naxes[0]); fp_msg (msg);
+		    snprintf (msg, SZ_STR," [%ld", naxes[0]); fp_msg (msg);
 		    for (ii=1; ii < naxis; ii++) {
-			sprintf (msg, "x%ld", naxes[ii]); fp_msg (msg);
+			snprintf (msg, SZ_STR,"x%ld", naxes[ii]); fp_msg (msg);
 		    }
 		    fp_msg ("]");
 		}
@@ -328,17 +343,17 @@ int fp_info_hdu (fitsfile *infptr)
                     fp_msg (" not_tiled\n");
 
             } else if (hdutype == ASCII_TBL) {
-                sprintf (msg, "  %d ASCII_TBL", hdupos); fp_msg (msg);
-                sprintf (msg, " SUMS=%lu/%lu\n", (unsigned long) (~((int) hdusum)), datasum); fp_msg (msg);
+                snprintf (msg, SZ_STR,"  %d ASCII_TBL", hdupos); fp_msg (msg);
+                snprintf (msg, SZ_STR," SUMS=%lu/%lu\n", (unsigned long) (~((int) hdusum)), datasum); fp_msg (msg);
 
             } else if (hdutype == BINARY_TBL) {
-                sprintf (msg, "  %d BINARY_TBL", hdupos); fp_msg (msg);
-                sprintf (msg, " SUMS=%lu/%lu\n", (unsigned long) (~((int) hdusum)), datasum); fp_msg (msg);
+                snprintf (msg, SZ_STR,"  %d BINARY_TBL", hdupos); fp_msg (msg);
+                snprintf (msg, SZ_STR," SUMS=%lu/%lu\n", (unsigned long) (~((int) hdusum)), datasum); fp_msg (msg);
 
             } else {
-                sprintf (msg, "  %d OTHER", hdupos); fp_msg (msg);
-                sprintf (msg, " SUMS=%lu/%lu",   (unsigned long) (~((int) hdusum)), datasum); fp_msg (msg);
-                sprintf (msg, " %s\n", val); fp_msg (msg);
+                snprintf (msg, SZ_STR,"  %d OTHER", hdupos); fp_msg (msg);
+                snprintf (msg, SZ_STR," SUMS=%lu/%lu",   (unsigned long) (~((int) hdusum)), datasum); fp_msg (msg);
+                snprintf (msg, SZ_STR," %s\n", val); fp_msg (msg);
             }
 
 	    fits_movrel_hdu (infptr, 1, NULL, &stat);
@@ -472,6 +487,11 @@ int fp_preflight (int argc, char *argv[], int unpack, fpstate *fpptr)
 
 	      /* if gzipping the output, make sure .gz file doesn't exist */
 	      if (fpptr->do_gzip_file) {
+                        if (strlen(outfits)+3 > SZ_STR-1)
+                        {
+		            fp_msg ("Error: output file name too long:\n "); fp_msg (outfits);
+		            fp_msg ("\n "); fp_noop (); exit (-1);
+                        }
 	                strcat(outfits, ".gz");
 	                if (fp_access (outfits) == 0) {
 		            fp_msg ("Error: output file already exists:\n "); fp_msg (outfits);
@@ -486,6 +506,11 @@ int fp_preflight (int argc, char *argv[], int unpack, fpstate *fpptr)
 	      /* check that input file  exists */
 	      if (infits[0] != '-') {  /* if not reading from stdin stream */
 	        if (fp_access (infits) != 0) {  /* if not, then check if */
+                    if (strlen(infits)+3 > SZ_STR-1)
+                    {
+		        fp_msg ("Error: input file name too long:\n "); fp_msg (infits);
+		        fp_msg ("\n "); fp_noop (); exit (-1);
+                    }
 		    strcat(infits, ".gz");     /* a gzipped version exsits */
 	            if (fp_access (infits) != 0) {
                         namelen = strlen(infits);
@@ -553,7 +578,8 @@ int fp_loop (int argc, char *argv[], int unpack, fpstate fpvar)
 {
 	char	infits[SZ_STR], outfits[SZ_STR];
 	char	temp[SZ_STR], answer[30];
-	int	iarg, islossless, namelen, iraf_infile = 0, status = 0, ifail;
+        char    valchar[]="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.#()+,-_@[]/^{}";
+	int	ichar=0, outlen=0, iarg, islossless, namelen, iraf_infile = 0, status = 0, ifail;
         
 	if (fpvar.initialized != FP_INIT_MAGIC) {
 	    fp_msg ("Error: internal initialization error\n"); exit (-1);
@@ -598,6 +624,7 @@ int fp_loop (int argc, char *argv[], int unpack, fpstate fpvar)
           islossless = 1;
 
 	  strncpy (infits, argv[iarg], SZ_STR - 1);
+          infits[SZ_STR-1]=0;
 
           if (unpack) {
 	  	/* ********** This section applies to funpack ************ */
@@ -678,6 +705,7 @@ int fp_loop (int argc, char *argv[], int unpack, fpstate fpvar)
 	  }
 
           strncpy(temp, outfits, SZ_STR-1);
+          temp[SZ_STR-1]=0;
 
 	  if (infits[0] != '-') {  /* if not reading from stdin stream */
              if (!strcmp(infits, outfits) ) {  /* are input and output names the same? */
@@ -828,6 +856,20 @@ int fp_loop (int argc, char *argv[], int unpack, fpstate fpvar)
 
 	    if (fpvar.do_gzip_file) {       /* gzip the output file */
 		strcpy(temp, "gzip -1 ");
+                outlen = strlen(outfits);
+                if (outlen + 8 > SZ_STR-1)
+                {
+                   fp_msg("\nError: Output file name is too long.\n");
+                   exit(-1);
+                }
+                for (ichar=0; ichar < outlen; ++ichar)
+                {
+                   if (!strchr(valchar, outfits[ichar]))
+                   {
+                      fp_msg("\n Error: Invalid characters in output file name.\n");
+                      exit(-1);
+                   }
+                }                
 		strcat(temp,outfits);
                 system(temp);
 	        strcat(outfits, ".gz");    /* only possibible with funpack */
@@ -1065,7 +1107,6 @@ int fp_test (char *infits, char *outfits, char *outfits2, fpstate fpvar)
 	fitsfile *inputfptr, *infptr, *outfptr, *outfptr2, *tempfile;
 
 	long	naxes[9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
-	long	tilesize[9] = {0,1,1,1,1,1,1,1,1};
 	int	stat=0, totpix=0, naxis=0, ii, hdutype, bitpix = 0, extnum = 0, len;
 	int     tstatus = 0, hdunum, rescale_flag, bpix, ncols;
 	char	dtype[8], dimen[100];
@@ -1195,13 +1236,15 @@ int fp_test (char *infits, char *outfits, char *outfits2, fpstate fpvar)
 		printf("  Ext BITPIX Dimens.   Nulls    Min    Max     Mean    Sigma  Noise2  Noise3  Noise5  Nbits   MaxR\n");
 
 		printf("  %3d  %s", extnum, dtype);
-		sprintf(dimen," (%ld", naxes[0]);
+		snprintf(dimen,100," (%ld", naxes[0]);
 		len =strlen(dimen);
 		for (ii = 1; ii < naxis; ii++) {
-		    sprintf(dimen+len,",%ld", naxes[ii]);
+                    if (len < 99)
+		       snprintf(dimen+len,100-len,",%ld", naxes[ii]);
 		    len =strlen(dimen);
 		}
-		strcat(dimen, ")");
+                if (strlen(dimen)<99)
+		   strcat(dimen, ")");
 		printf("%-12s",dimen);
 
 		fits_get_hduaddr(inputfptr, &headstart, &datastart, &dataend, &stat);
@@ -1329,7 +1372,14 @@ printf("    HDU %d does not meet noise criteria to be quantized, so losslessly c
 
     		fits_get_num_rowsll(inputfptr, &nrows, &stat);
     		fits_get_num_cols(inputfptr, &ncols, &stat);
+#if defined(_MSC_VER)
+                /* Microsoft Visual C++ 6.0 uses '%I64d' syntax  for 8-byte integers */
+ 		printf("\n File: %s, HDU %d,  %d cols X %I64d rows\n", infits, extnum, ncols, nrows);
+#elif (USE_LL_SUFFIX == 1)
+ 		printf("\n File: %s, HDU %d,  %d cols X %lld rows\n", infits, extnum, ncols, nrows);
+#else
  		printf("\n File: %s, HDU %d,  %d cols X %ld rows\n", infits, extnum, ncols, nrows);
+#endif
 		fp_test_table(inputfptr, outfptr, outfptr2, fpvar, &stat);	  
 
 	    } else {
@@ -1360,7 +1410,7 @@ int fp_pack_hdu (fitsfile *infptr, fitsfile *outfptr, fpstate fpvar,
 	fitsfile *tempfile;
 	long	naxes[9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 	int	stat=0, totpix=0, naxis=0, ii, hdutype, bitpix;
-	int	tstatus, hdunum, rescale_flag = 0;
+	int	tstatus, hdunum;
 	double  bscale, rescale;
 
 	char	outfits[SZ_STR], fzalgor[FLEN_VALUE];
@@ -1487,6 +1537,9 @@ int fp_pack_hdu (fitsfile *infptr, fitsfile *outfptr, fpstate fpvar,
 			  fp_i4stat(infptr, naxis, naxes, &imagestats, &stat);
 			else
 			  fp_i2stat(infptr, naxis, naxes, &imagestats, &stat);
+
+			/* rescan the image header to reset scaling values (changed by fp_iNstat) */
+			ffrhdu(infptr, &hdutype, &stat);
 
 			/* use the minimum of the MAD 2nd, 3rd, and 5th order noise estimates */
 			noisemin = imagestats.noise3;
@@ -1738,7 +1791,7 @@ int fp_test_hdu (fitsfile *infptr, fitsfile *outfptr, fitsfile *outfptr2,
    /*   This routine is only used for performance testing of image HDUs. */
    /*   Use fp_test_table for testing binary table HDUs.    */
 
-	int stat = 0, hdutype, comptype, noloss = 0;
+	int stat = 0, hdutype, comptype;
         char ctype[20], lossless[4];
 	long headstart, datastart, dataend;
 	float origdata = 0., compressdata = 0.;
@@ -1823,7 +1876,6 @@ int fp_test_hdu (fitsfile *infptr, fitsfile *outfptr, fitsfile *outfptr2,
 
 		if ( datasum1 == datasum2) {
 			strcpy(lossless, "Yes");
-			noloss = 1;
 		} else {
 			strcpy(lossless, "No");
 		}
@@ -1859,7 +1911,7 @@ int fp_test_hdu (fitsfile *infptr, fitsfile *outfptr, fitsfile *outfptr2,
 int fp_test_table (fitsfile *infptr, fitsfile *outfptr, fitsfile *outfptr2, 
 	fpstate fpvar, int *status)
 {
-/* this routine is for performance testing of the beta table compression methods */
+/* this routine is for performance testing of the table compression methods */
 
 	int stat = 0, hdutype, tstatus = 0;
         char fzalgor[FLEN_VALUE];
