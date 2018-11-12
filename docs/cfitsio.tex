@@ -31,7 +31,7 @@
 \medskip
 \medskip
 \begin{center}
-{\Large Version 3.3 \\}
+{\Large Version 3.4 \\}
 \end{center}
 \bigskip
 \vskip 2.5cm
@@ -46,7 +46,7 @@ USA}
 \vfill
 \bigskip
 \begin{center}
-{\Large December 2013\\}
+{\Large May 2018\\}
 \end{center}
 \vfill
 \end{titlepage}
@@ -263,30 +263,8 @@ The CFITSIO code is contained in about 40 C source files (*.c) and header
 files (*.h). On VAX/VMS systems 2 assembly-code files (vmsieeed.mar and
 vmsieeer.mar) are also needed.
 
-CFITSIO has currently been tested on the following platforms (not up-to-date):
-
-\begin{verbatim}
-  OPERATING SYSTEM           COMPILER
-   Sun OS                     gcc and cc (3.0.1)
-   Sun Solaris                gcc and cc
-   Silicon Graphics IRIX      gcc and cc
-   Silicon Graphics IRIX64    MIPS
-   Dec Alpha OSF/1            gcc and cc
-   DECstation  Ultrix         gcc
-   Dec Alpha OpenVMS          cc
-   DEC VAX/VMS                gcc and cc
-   HP-UX                      gcc
-   IBM AIX                    gcc
-   Linux                      gcc
-   MkLinux                    DR3
-   Windows 95/98/NT           Borland C++ V4.5
-   Windows 95/98/NT/ME/XP     Microsoft/Compaq Visual C++ v5.0, v6.0
-   Windows 95/98/NT           Cygwin gcc
-   MacOS 7.1 or greater       Metrowerks 10.+
-   MacOS-X 10.1 or greater    cc (gcc)
-\end{verbatim}
-CFITSIO will probably run on most other Unix platforms.  Cray
-supercomputers are currently not supported.
+CFITSIO is written in ANCI C and should be compatible with most existing C and C++
+compilers. Cray supercomputers are currently not supported.
 
 
 \subsection{Unix Systems}
@@ -316,13 +294,30 @@ to /usr1/local/lib and the necessary include files to /usr1/local/include
 (assuming of course that the  process has permission to write to these
 directories).
 
-The optional --enable-reentrant flag will attempt to configure CFITSIO
-so that it can be used in multi-threaded programs.  See the "Using CFITSIO in Multi-threaded Environments" section, below, for more
+All the available configure options can be seen by entering the command
 
-The optional --enable-sse2 and --enable-ssse3 flags will cause configure to
+\begin{verbatim}
+   > ./configure --help
+\end{verbatim}
+Some of the more useful options are described below:
+
+The --enable-reentrant option will attempt to configure CFITSIO
+so that it can be used in multi-threaded programs.  See the
+"Using CFITSIO in Multi-threaded Environments" section, below, for more details.
+
+The --enable-sse2 and --enable-ssse3 options will cause configure to
 attempt to build CFITSIO using faster byte-swapping algorithms.
 See the "Optimizing Programs" chapter of this manual for
 more information about these options.
+
+The --with-gsiftp-flavour and --with-gsiftp options enable support for the Globus
+Toolkit gsiftp protocal.  See the "Extended File Name Syntax" chapter for more
+information.
+
+The --with-bzip2 option enables support for reading FITS files that have been
+externally compressed by the bzip2 algorithm.  This requires that the CFITSIO
+library, and all applications program that use CFITSIO, to be linked to include
+the libbz2 library.
 
 The 'make shared' option builds a shared or dynamic version of the
 CFITSIO library.  When using the shared library the executable code is
@@ -390,17 +385,11 @@ link line in the next section of this document.
 
 \subsection{Windows PCs}
 
-A precompiled DLL version of CFITSIO is available for IBM-PC users of
-the Borland or Microsoft Visual C++ compilers in the files
-cfitsiodll\_3xxx\_borland.zip and cfitsiodll\_3xxx\_vcc.zip, where
-'3xxx' represents the current release number.  These zip archives also
-contains other files and instructions on how to use the CFITSIO DLL
-library.
-
+A precompiled DLL version of CFITSIO (not necessarily the latest version)
+is available on the CFITSIO web site.
 The CFITSIO library may also be built from the source code using the
-makefile.bc or makefile.vcc  files.  Finally, the makepc.bat file gives
-an example of  building CFITSIO with the Borland C++ v4.5 or v5.5  compiler
-using older DOS commands.
+CMake build system.  See the "README.win" file in the CFITSIO source distribution
+for more information.
 
 
 \subsection{Macintosh PCs}
@@ -629,7 +618,7 @@ primary array contains an N-dimensional array of pixels, such as a 1-D
 spectrum, a 2-D image, or a 3-D data cube.  Six different primary
 data types are supported: Unsigned 8-bit bytes, 16-bit, 32-bit, and 64-bit signed
 integers, and 32 and 64-bit floating point reals.  FITS also has a
-convention for storing 16 and 32-bit unsigned integers (see the later
+convention for storing 16, 32-bit, and 64-bit unsigned integers (see the later
 section entitled `Unsigned Integers' for more details). The primary HDU
 may also consist of only a header with a null array containing no
 data pixels.
@@ -785,12 +774,14 @@ BITPIX data type code values for FITS images:
   #define DOUBLE_IMG  -64  /* 64-bit double precision floating point */
 
   The following 4 data type codes are also supported by CFITSIO:
-  #define SBYTE_IMG  10   /*  8-bit signed integers, equivalent to */
-                          /*  BITPIX = 8, BSCALE = 1, BZERO = -128 */
-  #define USHORT_IMG  20  /* 16-bit unsigned integers, equivalent to */
-                          /*  BITPIX = 16, BSCALE = 1, BZERO = 32768 */
-  #define ULONG_IMG   40  /* 32-bit unsigned integers, equivalent to */
-                          /*  BITPIX = 32, BSCALE = 1, BZERO = 2147483648 */
+  #define SBYTE_IMG  10      /*  8-bit signed integers, equivalent to */
+                             /*  BITPIX = 8, BSCALE = 1, BZERO = -128 */
+  #define USHORT_IMG  20     /* 16-bit unsigned integers, equivalent to */
+                             /*  BITPIX = 16, BSCALE = 1, BZERO = 32768 */
+  #define ULONG_IMG   40     /* 32-bit unsigned integers, equivalent to */
+                             /*  BITPIX = 32, BSCALE = 1, BZERO = 2147483648 */
+  #define ULONGLONG_IMG  80  /* 64-bit unsigned integers, equivalent to */
+                             /*  BITPIX = 64, BSCALE = 1, BZERO = 9223372036854775808*/
 
 Codes for the data type of binary table columns and/or for the
 data type of variables when reading or writing keywords or data:
@@ -813,8 +804,9 @@ data type of variables when reading or writing keywords or data:
   #define TINT         31  /* int                            */
   #define TSBYTE       12  /* 8-bit signed byte,         'S' */
   #define TUINT        30  /* unsigned int               'V' */
-  #define TUSHORT      20  /* unsigned short             'U'  */
+  #define TUSHORT      20  /* unsigned short             'U' */
   #define TULONG       40  /* unsigned long                  */
+  #define TULONGLONG   80  /* unsigned long long         'W' */
 
   The following data type code is only for use with fits\_get\_coltype
   #define TINT32BIT    41  /* signed 32-bit int,         'J' */
@@ -904,6 +896,7 @@ as shown in the following table:
     _lnglng     jj   8-byte LONGLONG integer (see note below)
     _usht       ui   unsigned short integer
     _ulng       uj   unsigned long integer
+    _ulnglng    ujj  unsigned long long integer
     _uint       uk   unsigned int integer
     _int        k    int integer
     _flt        e    real exponential floating point (float)
@@ -1026,8 +1019,8 @@ the appropriate offset in these cases so in general application
 programs do not need to be concerned with how the unsigned values are
 actually stored in the FITS file.  As a convenience for users, CFITSIO
 has several predefined constants for the value of BITPIX  (USHORT\_IMG,
-ULONG\_IMG) and for the TFORMn value in the case of binary tables (`U'
-and `V') which programmers can use when creating FITS files containing
+ULONG\_IMG, ULONGLONG\_IMG) and for the TFORMn value in the case of binary tables (`U',
+`V', and `W') which programmers can use when creating FITS files containing
 unsigned integer values.  The following code fragment illustrates how
 to write a FITS 1-D primary array of unsigned 16-bit integers:
 
@@ -1060,9 +1053,10 @@ the array of unsigned long image pixel values.
 An analogous set of routines are available for reading or writing unsigned
 integer values and signed byte values in a FITS binary table extension.
 When specifying the TFORMn keyword value which defines the format of a
-column, CFITSIO recognized 3 additional data type codes besides those
+column, CFITSIO recognizes 4 additional data type codes besides those
 already defined in the FITS standard: `U' meaning a 16-bit unsigned
-integer column, `V' for a 32-bit unsigned integer column, and 'S'
+integer column, `V' for a 32-bit unsigned integer column, `W' for a 64-bit
+unsigned integer column, and 'S'
 for a signed byte column.  These non-standard data type codes are not
 actually written into the FITS file but instead are just used internally
 within CFITSIO.  The following code fragment illustrates how to use
@@ -1077,10 +1071,10 @@ these features:
 
       char extname[] = "Test_table";           /* extension name */
 
-      /* define the name, data type, and physical units for the 2 columns */
-      char *ttype[] = { "Col_1", "Col_2", "Col_3" };
-      char *tform[] = { "1U",      "1V",    "1S"};  /* special CFITSIO codes */
-      char *tunit[] = { " ",        " ",    " " };
+      /* define the name, data type, and physical units for 4 columns */
+      char *ttype[] = { "Col_1", "Col_2", "Col_3", "Col_4" };
+      char *tform[] = { "1U",      "1V",    "1W",    "1S"};  /* special CFITSIO codes */
+      char *tunit[] = { " ",        " ",    " ",    " " };
        ...
 
            /* write the header keywords */
@@ -1105,11 +1099,12 @@ these features:
               nelements, varray, &status);
        ...
 \end{verbatim}
-Note that the non-standard TFORM values for the 3 columns, `U' and `V',
-tell CFITSIO to write the keywords appropriate for unsigned 16-bit and
-unsigned 32-bit integers, respectively (i.e., TFORMn = '1I' and TZEROn
-= 32768 for unsigned 16-bit integers, and TFORMn = '1J' and TZEROn =
-2147483648 for unsigned 32-bit integers).  The 'S' TFORMn value tells
+Note that the non-standard TFORM values for the 3 columns, `U', `V', and `W'
+tell CFITSIO to write the keywords appropriate for unsigned 16-bit, unsigned 32-bit and
+unsigned 64-bit integers, respectively (i.e., TFORMn = '1I' and TZEROn
+= 32768 for unsigned 16-bit integers, TFORMn = '1J' and TZEROn =
+2147483648 for unsigned 32-bit integers, and TFORMn = '1K' and TZEROn =
+9223372036854775808 for unsigned 64-bit integers).  The 'S' TFORMn value tells
 CFITSIO to write the keywords appropriate for a signed 8-bit byte column
 with TFORMn = '1B' and TZEROn = -128.  The calls to fits\_write\_col
 then write the arrays of unsigned integer values to the columns.
@@ -1303,12 +1298,19 @@ error messages one at a time.
 
 CFITSIO provides easy-to-use support for reading and writing data in
 variable length fields of a binary table. The variable length columns
-have TFORMn keyword values of the form `1Pt(len)' where `t' is the
-data type code (e.g., I, J, E, D, etc.) and `len' is an integer
-specifying the maximum length of the vector in the table.  (CFITSIO also
-supports the experimental 'Q' datatype, which is identical to the 'P' type
-except that is supports is a 64-bit address space and hence much larger
-data structures).  If the value
+have TFORMn keyword values of the form `1Pt(len)' or `1Qt(len)' where `t'
+is the data type code (e.g., I, J, E, D, etc.) and `len' is an integer
+specifying the maximum length of the vector in the table.  The 'P' type
+variable length columns use 32-bit array length and byte offset values, whereas
+the 'Q' type columns use 64-bit values, which may be required when dealing
+with large arrays.  CFITSIO supports a local convention that interprets
+the 'P' type descriptors as unsigned 32-bit integers, which provides
+a factor of 2 greater range for the array length or heap address than
+is possible with 32-bit 'signed' integers.  Note, however, that other software
+packages may not support this convention, and may be unable to read thees
+extended range variable length records.
+
+If the value
 of `len' is not specified when the table is created (e.g., if the TFORM
 keyword value is simply specified as '1PE' instead of '1PE(400) ), then
 CFITSIO will automatically scan the table when it is closed to
@@ -1670,6 +1672,10 @@ int fits_open_table / fftopn
 
 int fits_open_image / ffiopn
     (fitsfile **fptr, char *filename, int iomode, > int *status)
+
+int fits_open_extlist / ffeopn
+    (fitsfile **fptr, char *filename, int iomode, char *extlist,
+    >  int *hdutype, int *status)
 \end{verbatim}
 
 The iomode parameter determines the read/write access allowed in the
@@ -1701,6 +1707,13 @@ fits\_open\_data except they will move to the first significant table
 HDU or image HDU in the file, respectively, if a HDU name or
 number is not specified as part of the filename.
 
+The fits\_open\_extname routine opens the file and attempts to move to a 'useful'
+HDU. If after opening the file CFITSIO is pointing to null primary array,
+then CFITSIO will attempt to move to the first extension that has an EXTNAME or
+HDUNAME keyword value that matches one of the names in the input extlist
+space-delimited list of names.  If that fails, then CFITSIO simply moves to the
+2nd HDU in the file.
+
 IRAF images (.imh format files) and raw binary data arrays may also be
 opened with READONLY access.  CFITSIO will automatically test if the
 input file is an IRAF image, and if, so will convert it on the fly into
@@ -1716,7 +1729,10 @@ is then opened by the application program with READONLY access.
 Programs can read the input file from the 'stdin' file stream if a dash
 character ('-') is given as the filename. Files can also be opened over
 the network using FTP or HTTP protocols by supplying the appropriate URL
-as the filename.
+as the filename.  The HTTPS protocol is also supported if the CFITSIO
+build includes the libcurl library.  (If the CFITSIO 'configure' script
+finds a usable libcurl library on your system, it will automatically be 
+included in the build.)
 
 The input file can be modified in various ways to create a virtual file
 (usually stored in memory) that is then opened by the application
@@ -2066,7 +2082,34 @@ header.
 \end{verbatim}
 
 \begin{description}
-\item[3 ] Return the nth header record in the CHU.  The first keyword
+\item[3 ] Read a string-valued keyword and return the string length, the value string,
+    and/or the comment field.   The first routine, ffgksl, simply
+    returns the length of the character string value of the specified keyword.
+    The second routine, ffgsky, also returns up to maxchar characters
+    of the keyword value string, starting with the firstchar character,
+    and the keyword comment string (unless the input value of comm = NULL).
+    The valuelen argument returns the total length of the keyword value string
+    regardless of how much of the string is actually returned (which
+    depends on the value of the firstchar and maxchar arguments).
+    Note that the value character string argument must be allocated large enough to
+    also hold the null terminator at the end of the returned string.  These
+    routines support string keywords that use the CONTINUE convention to
+    continue long string values over multiple FITS header records.  Normally,
+    string-valued keywords have a maximum length of 68 characters, however,
+   CONTINUE'd string keywords may be arbitrarily long. \label{ffgksl} \label{ffgsky}
+\end{description}
+
+\begin{verbatim}
+  int fits_get_key_strlen / ffgksl
+      (fitsfile *fptr, const char *keyname, int *length, int *status);
+
+  int fits_read_string_key / ffgsky
+       (fitsfile *fptr, const char *keyname, int firstchar, int maxchar,
+       char *value, int *valuelen, char *comm, int *status);
+\end{verbatim}
+
+\begin{description}
+\item[4 ] Return the nth header record in the CHU.  The first keyword
    in the header is at keynum = 1;  if keynum = 0 then these routines
    simply reset the internal CFITSIO pointer to the beginning of the header
    so that subsequent keyword operations will start at the top of the
@@ -2090,7 +2133,7 @@ header.
 \end{verbatim}
 
 \begin{description}
-\item[4 ] Return the next keyword whose name matches one of the strings in
+\item[5 ] Return the next keyword whose name matches one of the strings in
     'inclist' but does not match any of the strings in 'exclist'.
     The strings in inclist and exclist may contain wild card characters
     (*, ?, and \#) as described at the beginning of this section.
@@ -2110,7 +2153,7 @@ header.
 \end{verbatim}
 
 \begin{description}
-\item[5 ] Return the physical units string from an existing keyword.  This
+\item[6 ] Return the physical units string from an existing keyword.  This
     routine uses a local convention, shown in the following example,
     in which the keyword units are enclosed in square brackets in the
     beginning of the keyword comment field.  A null string is returned
@@ -2125,7 +2168,7 @@ header.
 \end{verbatim}
 
 \begin{description}
-\item[6 ] Concatenate the header keywords in the CHDU into a single long
+\item[7 ] Concatenate the header keywords in the CHDU into a single long
     string of characters.  This provides a convenient way of passing
     all or part of the header information in a FITS HDU to other subroutines.
     Each 80-character fixed-length keyword record is appended to the
@@ -2347,7 +2390,7 @@ the image should be declared as array[50][100] and not as array[100][50].
 
 The `datatype'  parameter specifies the data type of the `nulval'  and
 `array' pointers and can have one of the following  values:  TBYTE,
-TSBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG, TLONGLONG, TULONG, TFLOAT,
+TSBYTE, TSHORT, TUSHORT, TINT, TUINT, TLONG, TLONGLONG, TULONG, TULONGLONG, TFLOAT,
 TDOUBLE.  Automatic data type conversion is performed if the data type
 of the FITS array (as defined by the BITPIX keyword) differs from that
 specified by 'datatype'.  The data values are also automatically scaled
@@ -3007,7 +3050,7 @@ spaces).  Trailing blank characters are not significant.
     of a column in an ASCII or binary table.  Allowed values for the
     data type in ASCII tables are:  TSTRING, TSHORT, TLONG, TFLOAT, and
     TDOUBLE.  Binary tables also support these types: TLOGICAL, TBIT,
-    TBYTE, TCOMPLEX and TDBLCOMPLEX.  The negative of the data type code
+    TBYTE, TLONGLONG, TCOMPLEX and TDBLCOMPLEX.  The negative of the data type code
     value is returned if it is a variable length array column.  Note
     that in the case of a 'J' 32-bit integer binary table column, this
     routine will return data type = TINT32BIT (which in fact is
@@ -3198,21 +3241,33 @@ spaces).  Trailing blank characters are not significant.
 \end{verbatim}
 
 \begin{description}
-\item[3 ] Copy a column from one HDU to another (or to the same HDU).  If
-    create\_col = TRUE, then a new column will be inserted in the output
-    table, at position `outcolumn', otherwise the existing output column will
-    be overwritten (in which case it must have a compatible data type).
-    If outcolnum is greater than the number of column in the table, then
-    the new column will be appended to the end of the table.
+\item[3 ] Copy column(s) between HDUs.  If create\_col = TRUE, then
+    new column(s) will be inserted in the output table, starting at
+    position `outcolumn', otherwise the existing output column(s) will
+    be overwritten (in which case they must have a compatible data
+    type).
+
+    The first form copies a single column incolnum to outcolnum.
+    Copying within the same HDU is permitted.  The second form copies
+    ncols columns from the input, starting at column incolnum to the
+    output, starting at outcolnum.  For the second form, the input and
+    output must be different HDUs.
+
+    If outcolnum is greater than the number of column in the output table, then
+    the new column(s) will be appended to the end of the table.
     Note that the first column in a table is at colnum = 1.
-    The standard indexed keywords that related to the column (e.g., TDISPn,
-   TUNITn, TCRPXn, TCDLTn, etc.) will also be copied. \label{ffcpcl}
+    The standard indexed keywords that related to the columns (e.g., TDISPn,
+    TUNITn, TCRPXn, TCDLTn, etc.) will also be copied. \label{ffcpcl} \label{ffccls}
 \end{description}
 
 \begin{verbatim}
   int fits_copy_col / ffcpcl
       (fitsfile *infptr, fitsfile *outfptr, int incolnum, int outcolnum,
        int create_col, > int *status);
+
+  int fits_copy_cols / ffccls
+      (fitsfile *infptr, fitsfile *outfptr, int incolnum, int outcolnum, 
+       int ncols, int create_col, > int *status);
 \end{verbatim}
 
 \begin{description}
@@ -3252,7 +3307,7 @@ Automatic data type conversion is performed for numerical data types
 (only) if the data type of the column (defined by the TFORMn keyword)
 differs from the data type of the array in the calling routine.  ASCII and binary
 tables support the following data type values:  TSTRING, TBYTE, TSBYTE, TSHORT,
-TUSHORT, TINT, TUINT, TLONG, TLONGLONG, TULONG, TFLOAT, or TDOUBLE.
+TUSHORT, TINT, TUINT, TLONG, TLONGLONG, TULONG, TULONGLONG, TFLOAT, or TDOUBLE.
 Binary tables also support TLOGICAL (internally mapped to the `char'
 data type), TCOMPLEX, and TDBLCOMPLEX.
 
@@ -3514,6 +3569,10 @@ array parameters.  If the value = DOUBLENULLVALUE and no keyword names are
 given,  then the routine will use the TLMINn and TLMAXn keywords, if present, or the
 actual min and/or max values in the column.
 
+The ``d'' version has double precision floating point outputs as noted
+in the calling signature.  The version without ``d'' has single
+precision floating point outputs.
+
 BINSIZEIN is an array giving the binsize along each axis.
 If the value =
 DOUBLENULLVALUE, and a keyword name is not specified with BINNAME,
@@ -3524,7 +3583,7 @@ is smaller.
 \end{description}
 
 \begin{verbatim}
-  int fits_calc_binning
+  int fits_calc_binning[d]
    Input parameters:
      (fitsfile *fptr,  /* IO - pointer to table to be binned              */
       int naxis,       /* I - number of axes/columns in the binned image  */
@@ -3538,9 +3597,9 @@ is smaller.
    Output parameters:
       int *colnum,     /* O - column numbers, to be binned */
       long *naxes,     /* O - number of bins in each histogram axis */
-      float *amin,     /* O - lower bound of the histogram axes */
-      float *amax,     /* O - upper bound of the histogram axes */
-      float *binsize,  /* O - width of histogram bins/pixels on each axis */
+      float[double] *amin,     /* O - lower bound of the histogram axes */
+      float[double] *amax,     /* O - upper bound of the histogram axes */
+      float[double] *binsize,  /* O - width of histogram bins/pixels on each axis */
       int *status)
 \end{verbatim}
 
@@ -3589,15 +3648,20 @@ the coordinate types are equal to the original column names.
 \item[4 ] Update the WCS keywords in a histogram image header that give the location
 of the reference pixel (CRPIXn), and the pixel size (CDELTn), in the binned
 image.
+
+The ``d'' version has double precision floating point inputs as noted
+in the calling signature.  The version without ``d'' has single
+precision floating point inputs.
+
  \label{rebinwcs}
 \end{description}
 
 \begin{verbatim}
-  int fits_rebin_wcs
+  int fits_rebin_wcs[d]
      (fitsfile *fptr,     /* I - pointer to table to be binned           */
       int naxis,          /* I - number of axes in the histogram image   */
-      float *amin,        /* I - first pixel include in each axis        */
-      float *binsize,     /* I - binning factor for each axis            */
+      float[double] *amin,        /* I - first pixel include in each axis        */
+      float[double] *binsize,     /* I - binning factor for each axis            */
       int *status)
 \end{verbatim}
 
@@ -3605,21 +3669,25 @@ image.
 \begin{description}
 \item[5 ] Bin the values in the input table columns, and write the histogram
 array to the output FITS image (histptr).
+
+The ``d'' version has double precision floating point inputs as noted
+in the calling signature.  The version without ``d'' has single
+precision floating point inputs.
  \label{makehist}
 \end{description}
 
 \begin{verbatim}
-  int fits_make_hist
+  int fits_make_hist[d]
    (fitsfile *fptr,    /* I - pointer to table with X and Y cols;      */
     fitsfile *histptr, /* I - pointer to output FITS image             */
     int bitpix,        /* I - datatype for image: 16, 32, -32, etc     */
     int naxis,         /* I - number of axes in the histogram image    */
     long *naxes,       /* I - size of axes in the histogram image      */
     int *colnum,       /* I - column numbers (array length = naxis)    */
-    float *amin,       /* I - minimum histogram value, for each axis   */
-    float *amax,       /* I - maximum histogram value, for each axis   */
-    float *binsize,    /* I - bin size along each axis                 */
-    float weight,      /* I - binning weighting factor (FLOATNULLVALUE */
+    float[double] *amin,       /* I - minimum histogram value, for each axis   */
+    float[double] *amax,       /* I - maximum histogram value, for each axis   */
+    float[double] *binsize,    /* I - bin size along each axis                 */
+    float[double] weight,      /* I - binning weighting factor (FLOATNULLVALUE */
                        /*     for no weighting)                        */
     int wtcolnum,      /* I - keyword or col for weight      (or NULL) */
     int recip,         /* I - use reciprocal of the weight? 0 or 1     */
@@ -4064,8 +4132,8 @@ The following utility routines may be useful for certain applications.
                      XTENSION, TFIELDS, TTYPEn, TBCOLn, TFORMn, THEAP,
                      and the first 4 COMMENT keywords in the primary array
                      that define the FITS format.
-  TYP_CMPRS_KEY  20  The experimental keywords used in the compressed
-                     image format ZIMAGE, ZCMPTYPE, ZNAMEn, ZVALn,
+  TYP_CMPRS_KEY  20  The keywords used in the compressed image or table
+                     format, including ZIMAGE, ZCMPTYPE, ZNAMEn, ZVALn,
                      ZTILEn, ZBITPIX, ZNAXISn, ZSCALE, ZZERO, ZBLANK
   TYP_SCAL_KEY   30  BSCALE, BZERO, TSCALn, TZEROn
   TYP_NULL_KEY   40  BLANK, TNULLn
@@ -5135,7 +5203,7 @@ These functions allow for the creation and manipulation of FITS HDU
 Groups, as defined in "A Hierarchical Grouping Convention for FITS" by
 Jennings, Pence, Folk and Schlesinger:
 
-http://fits.gsfc.nasa.gov/group.html
+https://fits.gsfc.nasa.gov/registry/grouping/grouping.pdf
 
 A group is a
 collection of HDUs whose association is defined by a {\it grouping
@@ -5347,7 +5415,7 @@ twice.
 
 \begin{verbatim}
   int fits_open_group / ffgtop
-      (fitsfile *mfptr, int group, > fitsfile **gfptr, int *status)
+      (fitsfile *mfptr, int grpid, > fitsfile **gfptr, int *status)
 \end{verbatim}
 
 \begin{description}
@@ -5372,7 +5440,7 @@ twice.
 
 \begin{description}
 \item[1 ] Return the number of member HDUs in a grouping table gfptr. The number
-    member HDUs is just the NAXIS2 value (number of rows) of the grouping
+    of member HDUs is just the NAXIS2 value (number of rows) of the grouping
    table. \label{ffgtnm}
 \end{description}
 
@@ -5454,7 +5522,7 @@ twice.
 
 \begin{verbatim}
   int fits_remove_member / ffgmrm
-      (fitsfile *fptr, long member, int rmopt, > int *status)
+      (fitsfile *gfptr, long member, int rmopt, > int *status)
 \end{verbatim}
 
 \chapter{ Specialized CFITSIO Interface Routines }
@@ -5715,6 +5783,47 @@ the 'exists' parameter will have 1 of the 4 following values:
       (fitsfile *fptr, 0, > int *status)
 
       (Note:  The second argument must be 0).
+\end{verbatim}
+
+\begin{description}
+\item[10 ] Wrapper function for global initialization of the libcurl library used
+   when accessing files with the HTTPS protocol.  If an HTTPS file transfer is to
+   be performed, it is recommended that you call this once near the start of your program
+   before any file\_open calls, and before creating any threads.  This is NOT THREAD-SAFE.
+   Returns 0 if initialization succeeded.
+   A corresponding call to fits\_cleanup\_https should be made later.
+  \label{ffihtps}
+\end{description}
+
+\begin{verbatim}
+  int fits_init_https / ffihtps
+      ()
+\end{verbatim}
+
+\begin{description}
+\item[11 ] Wrapper function for global cleanup of the libcurl library used when
+   accessing files with the HTTPS protocol.  This is meant to be used in combination 
+   with fits\_init\_https, and should be called after all HTTPS file accessing is completed,
+   and after all threads are completed.  This is NOT THREAD-SAFE.  Returns 0 upon successful
+   cleanup.
+  \label{ffchtps}
+\end{description}
+
+\begin{verbatim}
+   int fits_cleanup_https / ffchtps
+       ()
+\end{verbatim}
+
+\begin{description}
+\item[12 ] Toggle the verbosity of the libcurl library diagnostic output when
+   accessing files with the HTTPS protocol.  'flag' = 1 turns the output
+   on, 0 turns it off (the default).  This is NOT THREAD-SAFE.
+  \label{ffvhtps}
+\end{description}
+
+\begin{verbatim}
+   void fits_verbose_https / ffvhtps
+        (int flag)
 \end{verbatim}
 
 
@@ -6603,8 +6712,8 @@ with large data arrays.
       (fitsfile *fptr, int datatype, LONGLONG firstelem, LONGLONG nelements,
        DTYPE *array, int *status);
 
-  int fits_write_img_[byt, sht, usht, int, uint, lng, ulng, lnglng, flt, dbl] /
-      ffppr[b,i,ui,k,uk,j,uj,jj,e,d]
+  int fits_write_img_[byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+      ffppr[b,i,ui,k,uk,j,uj,jj,ujj,e,d]
       (fitsfile *fptr, long group, LONGLONG firstelem, LONGLONG nelements,
        DTYPE *array, > int *status);
 
@@ -6612,8 +6721,8 @@ with large data arrays.
       (fitsfile *fptr, int datatype, LONGLONG firstelem, LONGLONG nelements,
        DTYPE *array, DTYPE *nulval, > int *status);
 
-  int fits_write_imgnull_[byt, sht, usht, int, uint, lng, ulng, lnglng, flt, dbl] /
-      ffppn[b,i,ui,k,uk,j,uj,jj,e,d]
+  int fits_write_imgnull_[byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+      ffppn[b,i,ui,k,uk,j,uj,jj,ujj,e,d]
       (fitsfile *fptr, long group, LONGLONG firstelem,
            LONGLONG nelements, DTYPE *array, DTYPE nulval, > int *status);
 \end{verbatim}
@@ -6636,8 +6745,8 @@ with large data arrays.
 \end{description}
 
 \begin{verbatim}
-  int fits_write_grppar_[byt, sht, usht, int, uint, lng, ulng, lnglng, flt, dbl] /
-      ffpgp[b,i,ui,k,uk,j,uj,jj,e,d]
+  int fits_write_grppar_[byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+      ffpgp[b,i,ui,k,uk,j,uj,jj,ujj,e,d]
       (fitsfile *fptr, long group, long firstelem, long nelements,
        > DTYPE *array, int *status)
 \end{verbatim}
@@ -6647,13 +6756,13 @@ with large data arrays.
 \end{description}
 
 \begin{verbatim}
-  int fits_write_2d_[byt, sht, usht, int, uint, lng, ulng, lnglng, flt, dbl] /
-      ffp2d[b,i,ui,k,uk,j,uj,jj,e,d]
+  int fits_write_2d_[byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+      ffp2d[b,i,ui,k,uk,j,uj,jj,ujj,e,d]
       (fitsfile *fptr, long group, LONGLONG dim1, LONGLONG naxis1,
        LONGLONG naxis2, DTYPE *array, > int *status)
 
-  int fits_write_3d_[byt, sht, usht, int, uint, lng, ulng, lnglng, flt, dbl] /
-      ffp3d[b,i,ui,k,uk,j,uj,jj,e,d]
+  int fits_write_3d_[byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+      ffp3d[b,i,ui,k,uk,j,uj,jj,ujj,e,d]
       (fitsfile *fptr, long group, LONGLONG dim1, LONGLONG dim2, LONGLONG naxis1,
        LONGLONG naxis2, LONGLONG naxis3, DTYPE *array, > int *status)
 \end{verbatim}
@@ -6663,8 +6772,8 @@ with large data arrays.
 \end{description}
 
 \begin{verbatim}
-  int fits_write_subset_[byt, sht, usht, int, uint, lng, ulng, lnglng, flt, dbl] /
-      ffpss[b,i,ui,k,uk,j,uj,jj,e,d]
+  int fits_write_subset_[byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+      ffpss[b,i,ui,k,uk,j,uj,jj,ujj,e,d]
       (fitsfile *fptr, long group, long naxis, long *naxes,
        long *fpixel, long *lpixel, DTYPE *array, > int *status)
 \end{verbatim}
@@ -6679,8 +6788,8 @@ with large data arrays.
       (fitsfile *fptr, int  datatype, long firstelem, long nelements,
        DTYPE *nulval, > DTYPE *array, int *anynul, int *status)
 
-  int fits_read_img_[byt, sht, usht, int, uint, lng, ulng, lnglng, flt, dbl] /
-      ffgpv[b,i,ui,k,uk,j,uj,jj,e,d]
+  int fits_read_img_[byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+      ffgpv[b,i,ui,k,uk,j,uj,jj,ujj,e,d]
       (fitsfile *fptr, long group, long firstelem, long nelements,
        DTYPE nulval, > DTYPE *array, int *anynul, int *status)
 
@@ -6688,8 +6797,8 @@ with large data arrays.
       (fitsfile *fptr, int  datatype, long firstelem, long nelements,
        > DTYPE *array, char *nullarray, int *anynul, int *status)
 
-  int  fits_read_imgnull_[byt, sht, usht, int, uint, lng, ulng, flt, dbl] /
-       ffgpf[b,i,ui,k,uk,j,uj,jj,e,d]
+  int  fits_read_imgnull_[byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+       ffgpf[b,i,ui,k,uk,j,uj,jj,ujj,e,d]
        (fitsfile *fptr, long group, long firstelem, long nelements,
        > DTYPE *array, char *nullarray, int *anynul, int *status)
 \end{verbatim}
@@ -6702,8 +6811,8 @@ with large data arrays.
 \end{description}
 
 \begin{verbatim}
-  int  fits_read_grppar_[byt, sht, usht, int, uint, lng, ulng, lnglng, flt, dbl] /
-       ffggp[b,i,ui,k,uk,j,uj,jj,e,d]
+  int  fits_read_grppar_[byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+       ffggp[b,i,ui,k,uk,j,uj,jj,ujj,e,d]
        (fitsfile *fptr, long group, long firstelem, long nelements,
        > DTYPE *array, int *status)
 \end{verbatim}
@@ -6716,13 +6825,13 @@ with large data arrays.
 \end{description}
 
 \begin{verbatim}
-  int  fits_read_2d_[byt, sht, usht, int, uint, lng, ulng, lnglng, flt, dbl] /
-       ffg2d[b,i,ui,k,uk,j,uj,jj,e,d]
+  int  fits_read_2d_[byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+       ffg2d[b,i,ui,k,uk,j,uj,jj,ujj,e,d]
        (fitsfile *fptr, long group, DTYPE nulval, LONGLONG dim1, LONGLONG naxis1,
        LONGLONG naxis2, > DTYPE *array, int *anynul, int *status)
 
-  int  fits_read_3d_[byt, sht, usht, int, uint, lng, ulng, lnglng, flt, dbl] /
-       ffg3d[b,i,ui,k,uk,j,uj,jj,e,d]
+  int  fits_read_3d_[byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+       ffg3d[b,i,ui,k,uk,j,uj,jj,ujj,e,d]
        (fitsfile *fptr, long group, DTYPE nulval, LONGLONG dim1,
        LONGLONG dim2, LONGLONG naxis1, LONGLONG naxis2, LONGLONG naxis3,
        > DTYPE *array, int *anynul, int *status)
@@ -6734,14 +6843,14 @@ with large data arrays.
 \end{description}
 
 \begin{verbatim}
-  int  fits_read_subset_[byt, sht, usht, int, uint, lng, ulng, lnglng, flt, dbl] /
-       ffgsv[b,i,ui,k,uk,j,uj,jj,e,d]
+  int  fits_read_subset_[byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+       ffgsv[b,i,ui,k,uk,j,uj,jj,ujj,e,d]
        (fitsfile *fptr, int group, int naxis, long *naxes,
        long *fpixel, long *lpixel, long *inc, DTYPE nulval,
        > DTYPE *array, int *anynul, int *status)
 
-  int  fits_read_subsetnull_[byt, sht, usht, int, uint, lng, ulng, lnglng, flt, dbl] /
-       ffgsf[b,i,ui,k,uk,j,uj,jj,e,d]
+  int  fits_read_subsetnull_[byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+       ffgsf[b,i,ui,k,uk,j,uj,jj,ujj,e,d]
        (fitsfile *fptr, int group, int naxis, long *naxes,
        long *fpixel, long *lpixel, long *inc, > DTYPE *array,
        char *nullarray, int *anynul, int *status)
@@ -6889,8 +6998,8 @@ parameters used in these routines.
       (fitsfile *fptr, int colnum, LONGLONG firstrow, LONGLONG firstelem,
        LONGLONG nelements, char **array, > int *status)
 
-  int fits_write_col_[log,byt,sht,usht,int,uint,lng,ulng,lnglng,flt,dbl,cmp,dblcmp] /
-      ffpcl[l,b,i,ui,k,uk,j,uj,jj,e,d,c,m]
+  int fits_write_col_[log,byt,sht,usht,int,uint,lng,ulng,lnglng,ulnglng,flt,dbl,cmp,dblcmp] /
+      ffpcl[l,b,i,ui,k,uk,j,uj,jj,ujj,e,d,c,m]
       (fitsfile *fptr, int colnum, LONGLONG firstrow,
            LONGLONG firstelem, LONGLONG nelements, DTYPE *array, > int *status)
 \end{verbatim}
@@ -6902,8 +7011,8 @@ parameters used in these routines.
 \end{description}
 
 \begin{verbatim}
-  int fits_write_colnull_[log, byt, sht, usht, int, uint, lng, ulng, lnglng, flt, dbl] /
-      ffpcn[l,b,i,ui,k,uk,j,uj,jj,e,d]
+  int fits_write_colnull_[log, byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+      ffpcn[l,b,i,ui,k,uk,j,uj,jj,ujj,e,d]
       (fitsfile *fptr, int colnum, LONGLONG firstrow, LONGLONG firstelem,
        LONGLONG nelements, DTYPE *array, DTYPE nulval, > int *status)
 \end{verbatim}
@@ -7018,8 +7127,8 @@ parameters used in these routines.
        LONGLONG nelements, char *nulstr, > char **array, int *anynul,
        int *status)
 
-  int fits_read_col_[log,byt,sht,usht,int,uint,lng,ulng, lnglng, flt, dbl, cmp, dblcmp] /
-      ffgcv[l,b,i,ui,k,uk,j,uj,jj,e,d,c,m]
+  int fits_read_col_[log,byt,sht,usht,int,uint,lng,ulng, lnglng, ulnglng, flt, dbl, cmp, dblcmp] /
+      ffgcv[l,b,i,ui,k,uk,j,uj,jj,ujj,e,d,c,m]
       (fitsfile *fptr, int colnum, LONGLONG firstrow, LONGLONG firstelem,
        LONGLONG nelements, DTYPE nulval, > DTYPE *array, int *anynul,
        int *status)
@@ -7039,8 +7148,8 @@ parameters used in these routines.
        LONGLONG nelements, > char **array, char *nullarray, int *anynul,
        int *status)
 
-  int fits_read_colnull_[log,byt,sht,usht,int,uint,lng,ulng,lnglng,flt,dbl,cmp,dblcmp] /
-      ffgcf[l,b,i,ui,k,uk,j,uj,jj,e,d,c,m]
+  int fits_read_colnull_[log,byt,sht,usht,int,uint,lng,ulng,lnglng,ulnglng,flt,dbl,cmp,dblcmp] /
+      ffgcf[l,b,i,ui,k,uk,j,uj,jj,ujj,e,d,c,m]
       (fitsfile *fptr, int colnum, LONGLONG firstrow,
        LONGLONG firstelem, LONGLONG nelements, > DTYPE *array,
        char *nullarray, int *anynul, int *status)
@@ -7059,8 +7168,8 @@ parameters used in these routines.
 \end{description}
 
 \begin{verbatim}
-  int fits_read_subset_[byt, sht, usht, int, uint, lng, ulng, lnglng, flt, dbl] /
-      ffgsv[b,i,ui,k,uk,j,uj,jj,e,d]
+  int fits_read_subset_[byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+      ffgsv[b,i,ui,k,uk,j,uj,jj,ull,e,d]
       (fitsfile *fptr, int colnum, int naxis, long *naxes, long *fpixel,
        long *lpixel, long *inc, DTYPE nulval, > DTYPE *array, int *anynul,
        int *status)
@@ -7079,8 +7188,8 @@ parameters used in these routines.
 \end{description}
 
 \begin{verbatim}
-  int fits_read_subsetnull_[byt, sht, usht, int, uint, lng, ulng, lnglng, flt, dbl] /
-      ffgsf[b,i,ui,k,uk,j,uj,jj,e,d]
+  int fits_read_subsetnull_[byt, sht, usht, int, uint, lng, ulng, lnglng, ulnglng, flt, dbl] /
+      ffgsf[b,i,ui,k,uk,j,uj,jj,ujj,e,d]
       (fitsfile *fptr, int colnum, int naxis, long *naxes,
        long *fpixel, long *lpixel, long *inc, > DTYPE *array,
        char *nullarray, int *anynul, int *status)
@@ -7185,7 +7294,7 @@ be read by converting them on the fly into virtual FITS images.
 
 \item
 FITS files on the Internet can be read (and sometimes written) using the FTP,
-HTTP, or ROOT protocols.
+HTTP, HTTPS, or ROOT protocols.
 
 \item
 FITS files can be piped between tasks on the stdin and stdout streams.
@@ -7386,6 +7495,9 @@ CFITSIO to read and/or write the file.  Currently supported types are
                    supports username:password just like the ftp driver.
                    Proxy HTTP servers are supported using the http_proxy
                    environment variable (see following note).
+       https://  - a readonly file accessed with the HTTPS protocol.  This
+                   is available only if CFITSIO was built with the libcurl
+                   library (see the following note).
       stream://  - special driver to read an input FITS file from the stdin
                    stream, and/or write an output FITS file to the stdout
 		   stream.  This driver is fragile and has limited
@@ -7417,6 +7529,45 @@ For example
 will cause CFITSIO to use port 3128 on the heasarc proxy server whenever
 reading a FITS file with HTTP.
 
+\subsection{Notes about HTTPS file access}
+
+CFITSIO depends upon the availability of the libcurl library in order to perform 
+HTTPS file access.  (This should be the development version of the library, as
+it contains the curl.h header file required by the CFITSIO code.)   The CFITSIO
+'configure' script will search for this library on your system, and if it finds it 
+it will automatically be incorporated into the build.  
+
+Note that if you have this library package on your system, you will also have the 'curl-config'
+executable.  You can run the 'curl-config' executable with various options to learn
+more about the features of your libcurl installation.
+
+If the CFITSIO 'configure' succeeded in finding a usable libcurl, you will see the flag
+'-DCFITSIO\_HAVE\_CURL=1' in the CFITSIO Makefile and in the compilation output.  
+If 'configure' is unable to find a usable libcurl, CFITSIO will still build 
+but it won't have HTTPS capability.
+
+The libcurl package is normally included as part of Xcode on Macs.  However on Linux platforms you 
+may need to manually install it. This can be easily done on Ubuntu Linux using
+the 'apt get' command to retrieve the libcurl4-openssl-dev or the libcurl4-gnutls-dev packages.
+
+When accessing a file with HTTPS, the default CFITSIO behavior is to attempt
+to verify both the host name and the SSL certificate.  If it cannot, it will still 
+perform the file access but will issue a warning to the terminal window.
+
+The user can override this behavior to force CFITSIO to only allow file transfers
+when the host name and SSL certificate have been successfully verified.  This is
+done by setting the CFITSIO\_VERIFY\_HTTPS environment variable to 'True'. ie. in a
+csh shell:
+
+setenv CFITSIO\_VERIFY\_HTTPS True
+
+the default setting for this is 'False'.
+
+CFITSIO has 3 functions which apply specifically to HTTPS access:  fits\_init\_https, 
+fits\_cleanup\_https, and fits\_verbose\_https. It is recommended that you call the 
+init and cleanup functions near the beginning and end of your program respectively. 
+For more information about these functions, please see the 'FITS File Access Routines'
+section in the preceding chapter ('Specialized CFITSIO Interface Routines'). 
 
 \subsection{Notes about the stream filetype driver}
 
@@ -8216,6 +8367,36 @@ that the resulting header keywords in these cases will look like this:
 These two special keywords are always appended to the end of the header
 and will not affect any previously existing COMMENT or HISTORY keywords.
 
+It is possible to delete an existing keyword using a preceding \verb+'-'+.
+Either of these examples will delete the keyword named \verb+VEL+.
+\begin{verbatim}
+  -VEL;
+  -#VEL;
+\end{verbatim}
+It is also possible to use wildcard expressions to remove any keyword
+that matches a pattern.  Wildcard patterns are: \verb+'*'+, which matches any
+string of characters; \verb+'?'+, which matches any single character; and \verb+'#'+
+which matches any numerical string.  For example these
+statements:
+\begin{verbatim}
+  -#DEC_*;     # remove single keyword beginning with DEC_
+  -#TUNIT#;    # remove single keyword TUNIT ending w. number
+\end{verbatim}
+will remove any keyword beginning with 'DEC\_' and any
+keyword beginning with 'TUNIT' and ending with a number.
+
+However, the above expressions will only delete the {\it first}
+keyword which matches the pattern.  If multiple keywords later
+in the same CHDU match the pattern, they will not be deleted.
+To delete {\it zero or more} keywords that match the pattern, add a
+trailing \verb|'+'|.
+\begin{verbatim}
+  -#DEC_*+;     # remove all keywords beginning with DEC_
+  -#TUNIT#+;    # remove all keywords TUNIT ending w. number
+\end{verbatim}
+Note that this form will succeed if the requested keyword is not
+present.
+
 \item
 Recompute (overwrite) the values in an existing column or keyword by
 giving the name followed by an equals sign and an arithmetic
@@ -8638,6 +8819,23 @@ usage. Also, the integer to real casts values to double precision:
     vectors, will be expanded out with  each of its elements becoming an
     element in the constructed vector.
 
+\subsection{Row Access}
+
+    To access a table entry in a row other  than the current one, follow
+    the  column's name  with  a row  offset  within  curly  braces.  For
+    example, \verb+PHA{-3}+ will evaluate to the value  of column PHA, 3 rows
+    above  the  row currently  being processed.   One  cannot specify an
+    absolute row number, only a relative offset.  Rows that fall outside
+    the table will be treated as undefined, or NULLs.
+
+    Using the same column name on the left and right side of the equals
+    sign while using the \verb+COLUMN{-N}+ notation will not produce the desired
+    result.  For example,
+\begin{verbatim}
+              COUNT = COUNT{-1} + 1;   # BAD - do not use
+\end{verbatim}
+    will not produce an increasing counter.  Such recursive
+    calculations are often not possible with the calculator syntax.   
 
 \subsection{Good Time Interval Filtering}
 
@@ -9069,8 +9267,13 @@ the entire line is treated as a FITS comment keyword (with a blank
 keyword name) and is copied verbatim into the FITS header.
 
 The KEYVALUE field may have any allowed  FITS  data type: character
-string, logical, integer, real, complex integer, or complex real.  The
-character string values need not be enclosed in single quote characters
+string, logical, integer, real, complex integer, or complex real.  Integer
+values must be within the allowed range of a 'signed long' variable;
+some C compilers only suppport 4-byte long integers with a range
+from -2147483648 to +2147483647, whereas other C compilers support 8-byte
+integers with a range of plus or minus 2**63.
+
+The character string values need not be enclosed in single quote characters
 unless they are necessary to distinguish the string from a different
 data type (e.g.  2.0 is a real but '2.0' is a string).  The keyword has
 an undefined (null) value if the template record only contains blanks
@@ -9394,12 +9597,6 @@ keyword, so this local convention is in compliance with the
 FITS standard although other FITS readers may not
 recognize this convention.
 
-The Binary Table definition document that was approved by the IAU in
-1994 contains an appendix describing an alternate convention for
-specifying arrays of fixed or variable length strings in a binary table
-character column (with the form 'rA:SSTRw/nnn)'.  This appendix was not
-officially voted on by the IAU and hence is still provisional.  CFITSIO
-does not currently support this proposal.
 
 
 \section{Keyword Units Strings}
@@ -9439,32 +9636,34 @@ existing keyword.
 \section{HIERARCH Convention for Extended Keyword Names}
 
 CFITSIO supports the HIERARCH keyword convention which allows keyword
-names that are longer then 8 characters and may contain the full range
-of printable ASCII text characters.  This convention
-was developed at the European Southern Observatory (ESO)  to support
-hierarchical FITS keyword such as:
+names that are longer than 8 characters.  This convention
+was developed at the European Southern Observatory (ESO) and allows characters
+consisting of digits 0-9, upper case letters A-Z, the dash '-' and the underscore '\_'.
+The components of hierarchical keywords are separated by a single ASCII space charater.
+For instance:
 
 \begin{verbatim}
 HIERARCH ESO INS FOCU POS = -0.00002500 / Focus position
 \end{verbatim}
 Basically, this convention uses the FITS keyword 'HIERARCH' to indicate
 that this convention is being used, then the actual keyword name
-({\tt'ESO INS FOCU POS'} in this example) begins in column 10 and can
-contain any printable ASCII text characters, including spaces.  The
+({\tt'ESO INS FOCU POS'} in this example) begins in column 10.  The
 equals sign marks the end of the keyword name and is followed by the
 usual value and comment fields just as in standard FITS keywords.
 Further details of this convention are described at
-http://arcdev.hq.eso.org/dicb/dicd/dic-1-1.4.html (search for
-HIERARCH).
+http://fits.gsfc.nasa.gov/registry/hierarch\_keyword.html
+and in Section 4.4 of the ESO Data Interface Control Document that
+is linked to from
+http://archive.eso.org/cms/tools-documentation/eso-data-interface-control.html.
 
-This convention allows a much broader range of keyword names
+This convention allows a broader range of keyword names
 than is allowed by the FITS Standard.  Here are more examples
 of such keywords:
 
 \begin{verbatim}
-HIERARCH LongKeyword = 47.5 / Keyword has > 8 characters, and mixed case
-HIERARCH XTE$TEMP = 98.6 / Keyword contains the '$' character
-HIERARCH Earth is a star = F / Keyword contains embedded spaces
+HIERARCH LONGKEYWORD = 47.5 / Keyword has > 8 characters
+HIERARCH LONG-KEY_WORD2 = 52.3 / Long keyword with hyphen, underscore and digit
+HIERARCH EARTH IS A STAR = F / Keyword contains embedded spaces
 \end{verbatim}
 CFITSIO will transparently read and write these keywords, so application
 programs do not in general need to know anything about the specific
@@ -9482,12 +9681,8 @@ about 40 characters, which leaves enough room for most keyword values.
 CFITSIO returns an error if there is not enough room for both the
 keyword name and the keyword value on the 80-character card, except for
 string-valued keywords which are simply truncated so that the closing
-quote character falls in column 80.  In the current implementation,
-CFITSIO preserves the case of the letters when writing the keyword
-name, but it is case-insensitive when reading or searching for a
-keyword.  The current implementation allows any ASCII text character
-(ASCII 32 to ASCII 126) in the keyword name except for the '='
-character.  A space is also required on either side of the equal sign.
+quote character falls in column 80. A space is also required on either 
+side of the equal sign.
 
 
 \section{Tile-Compressed Image Format}
@@ -9787,9 +9982,10 @@ fits\_ascii\_tform    & \pageref{ffasfm} \\
 fits\_binary\_tform   & \pageref{ffbnfm} \\
 fits\_calculator     & \pageref{ffcalc} \\
 fits\_calculator\_rng     & \pageref{ffcalcrng} \\
-fits\_calc\_binning & \pageref{calcbinning} \\
+fits\_calc\_binning[d] & \pageref{calcbinning} \\
 fits\_calc\_rows    & \pageref{ffcrow} \\
 fits\_change\_group  & \pageref{ffgtch} \\
+fits\_cleanup\_https & \pageref{ffchtps} \\
 fits\_clear\_errmark  & \pageref{ffpmrk} \\
 fits\_clear\_errmsg   & \pageref{ffcmsg} \\
 fits\_close\_file     & \pageref{ffclos} \\
@@ -9799,6 +9995,7 @@ fits\_compress\_heap & \pageref{ffcmph} \\
 fits\_convert\_hdr2str  & \pageref{ffhdr2str}, \pageref{hdr2str} \\
 fits\_copy\_cell2image & \pageref{copycell} \\
 fits\_copy\_col     & \pageref{ffcpcl} \\
+fits\_copy\_cols    & \pageref{ffccls} \\
 fits\_copy\_data      & \pageref{ffcpdt} \\
 fits\_copy\_file      & \pageref{ffcpfl} \\
 fits\_copy\_group    & \pageref{ffgtcp} \\
@@ -9812,11 +10009,11 @@ fits\_copy\_pixlist2image & \pageref{copypixlist2image} \\
 fits\_copy\_rows &   \pageref{ffcprw} \\
 fits\_create\_diskfile    & \pageref{ffinit} \\
 fits\_create\_file    & \pageref{ffinit} \\
-fits\_create\_group  & \pageref{ffgtcr} \\
-fits\_create\_hdu     & \pageref{ffcrhd} \\
 
 \end{tabular}
 \begin{tabular}{lr}
+fits\_create\_group  & \pageref{ffgtcr} \\
+fits\_create\_hdu     & \pageref{ffcrhd} \\
 fits\_create\_img     & \pageref{ffcrim} \\
 fits\_create\_memfile    & \pageref{ffimem} \\
 fits\_create\_tbl     & \pageref{ffcrtb} \\
@@ -9847,10 +10044,10 @@ fits\_get\_acolparms  & \pageref{ffgacl} \\
 fits\_get\_bcolparms  & \pageref{ffgbcl} \\
 fits\_get\_chksum     & \pageref{ffgcks} \\
 fits\_get\_col\_display\_width    & \pageref{ffgcdw} \\
-fits\_get\_colname    & \pageref{ffgcnn} \\
-fits\_get\_colnum     & \pageref{ffgcno} \\
 \end{tabular}
 \begin{tabular}{lr}
+fits\_get\_colname    & \pageref{ffgcnn} \\
+fits\_get\_colnum     & \pageref{ffgcno} \\
 fits\_get\_coltype    & \pageref{ffgtcl} \\
 fits\_get\_compression\_type & \pageref{ffgetcomp} \\
 fits\_get\_eqcoltype    & \pageref{ffgtcl} \\
@@ -9867,6 +10064,7 @@ fits\_get\_img\_param & \pageref{ffgipr} \\
 fits\_get\_img\_size & \pageref{ffgisz} \\
 fits\_get\_img\_type & \pageref{ffgidt} \\
 fits\_get\_inttype    & \pageref{ffinttyp} \\
+fits\_get\_key\_strlen & \pageref{ffgksl} \\
 fits\_get\_keyclass    & \pageref{ffgkcl} \\
 fits\_get\_keyname    & \pageref{ffgknm} \\
 fits\_get\_keytype    & \pageref{ffdtyp} \\
@@ -9880,12 +10078,13 @@ fits\_get\_rowsize    & \pageref{ffgrsz} \\
 fits\_get\_system\_time  & \pageref{ffdt2s} \\
 fits\_get\_tile\_dim     & \pageref{ffgetcomp} \\
 fits\_get\_tbcol      & \pageref{ffgabc} \\
-fits\_get\_version    & \pageref{ffvers} \\
-fits\_hdr2str         & \pageref{ffhdr2str}, \pageref{hdr2str} \\
-fits\_insert\_atbl    & \pageref{ffitab} \\
 \end{tabular}
 \newpage
 \begin{tabular}{lr}
+fits\_get\_version    & \pageref{ffvers} \\
+fits\_hdr2str         & \pageref{ffhdr2str}, \pageref{hdr2str} \\
+fits\_init\_https  & \pageref{ffihtps} \\
+fits\_insert\_atbl    & \pageref{ffitab} \\
 fits\_insert\_btbl    & \pageref{ffibin} \\
 fits\_insert\_col   & \pageref{fficol} \\
 fits\_insert\_cols  & \pageref{fficls} \\
@@ -9897,7 +10096,7 @@ fits\_insert\_record     & \pageref{ffirec} \\
 fits\_insert\_rows  & \pageref{ffirow} \\
 fits\_is\_reentrant  & \pageref{reentrant} \\
 fits\_iterate\_data   & \pageref{ffiter} \\
-fits\_make\_hist      & \pageref{makehist} \\
+fits\_make\_hist[d]      & \pageref{makehist} \\
 fits\_make\_key       & \pageref{ffmkky} \\
 fits\_make\_keyn      & \pageref{ffkeyn} \\
 fits\_make\_nkey      & \pageref{ffnkey} \\
@@ -9915,6 +10114,7 @@ fits\_movrel\_hdu     & \pageref{ffmrhd} \\
 fits\_null\_check     & \pageref{ffnchk} \\
 fits\_open\_data      & \pageref{ffopen} \\
 fits\_open\_diskfile    & \pageref{ffopen} \\
+fits\_open\_extlist      & \pageref{ffopen} \\
 fits\_open\_file      & \pageref{ffopen} \\
 fits\_open\_image      & \pageref{ffopen} \\
 fits\_open\_table      & \pageref{ffopen} \\
@@ -9929,13 +10129,13 @@ fits\_parse\_rootname & \pageref{ffrtnm} \\
 fits\_parse\_template & \pageref{ffgthd} \\
 fits\_parse\_value    & \pageref{ffpsvc} \\
 fits\_pix\_to\_world & \pageref{ffwldp} \\
+\end{tabular}
+\begin{tabular}{lr}
 fits\_read\_2d\_TYP      & \pageref{ffg2dx} \\
 fits\_read\_3d\_TYP      & \pageref{ffg3dx} \\
 fits\_read\_atblhdr      & \pageref{ffghtb} \\
 fits\_read\_btblhdr      & \pageref{ffghbn} \\
 fits\_read\_card         & \pageref{ffgcrd} \\
-\end{tabular}
-\begin{tabular}{lr}
 fits\_read\_col        & \pageref{ffgcv} \\
 fits\_read\_col\_bit\_ & \pageref{ffgcx} \\
 fits\_read\_col\_TYP    & \pageref{ffgcvx} \\
@@ -9964,6 +10164,7 @@ fits\_read\_pix  & \pageref{ffgpxv} \\
 fits\_read\_pixnull & \pageref{ffgpxf} \\
 fits\_read\_record       & \pageref{ffgrec} \\
 fits\_read\_str         & \pageref{ffgcrd} \\
+fits\_read\_string\_key & \pageref{ffgsky} \\
 fits\_read\_subset  & \pageref{ffgsv} \\
 fits\_read\_subset\_TYP  & \pageref{ffgsvx} \pageref{ffgsvx2}\\
 fits\_read\_subsetnull\_TYP & \pageref{ffgsfx} \pageref{ffgsfx2} \\
@@ -9971,21 +10172,21 @@ fits\_read\_tbl\_coord & \pageref{ffgtcs} \\
 fits\_read\_tblbytes    & \pageref{ffgtbb} \\
 fits\_read\_tdim         & \pageref{ffgtdm} \\
 fits\_read\_wcstab       & \pageref{wcstab} \\
-fits\_rebin\_wcs  &  \pageref{rebinwcs} \\
+fits\_rebin\_wcs[d]  &  \pageref{rebinwcs} \\
 fits\_remove\_group  & \pageref{ffgtrm} \\
 fits\_remove\_member   & \pageref{ffgmrm} \\
 fits\_reopen\_file      & \pageref{ffreopen} \\
 fits\_report\_error   & \pageref{ffrprt} \\
 fits\_resize\_img     & \pageref{ffrsim} \\
 fits\_rms\_float      & \pageref{imageRMS} \\
+\end{tabular}
+\begin{tabular}{lr}
 fits\_rms\_short      & \pageref{imageRMS} \\
 fits\_select\_rows  & \pageref{ffsrow} \\
 fits\_set\_atblnull   & \pageref{ffsnul} \\
 fits\_set\_bscale     & \pageref{ffpscl} \\
 fits\_set\_btblnull   & \pageref{fftnul} \\
 fits\_set\_compression\_type  & \pageref{ffsetcomp} \\
-\end{tabular}
-\begin{tabular}{lr}
 fits\_set\_hdrsize    & \pageref{ffhdef} \\
 fits\_set\_hdustruc   & \pageref{ffrdef} \\
 fits\_set\_imgnull    & \pageref{ffpnul} \\
@@ -10010,6 +10211,7 @@ fits\_update\_key\_null   & \pageref{ffukyu} \\
 fits\_update\_key\_TYP    & \pageref{ffukyx} \\
 fits\_uppercase      & \pageref{ffupch} \\
 fits\_url\_type      & \pageref{ffurlt} \\
+fits\_verbose\_https  & \pageref{ffvhtps} \\
 fits\_verify\_chksum  & \pageref{ffvcks} \\
 fits\_verify\_group  & \pageref{ffgtvf} \\
 fits\_world\_to\_pix & \pageref{ffxypx} \\
@@ -10027,6 +10229,9 @@ fits\_write\_colnull\_TYP & \pageref{ffpcnx} \\
 fits\_write\_comment      & \pageref{ffpcom} \\
 fits\_write\_date         & \pageref{ffpdat} \\
 fits\_write\_descript  & \pageref{ffpdes} \\
+\end{tabular}
+\newpage
+\begin{tabular}{lr}
 fits\_write\_errmark   & \pageref{ffpmrk} \\
 fits\_write\_errmsg   & \pageref{ffpmsg} \\
 fits\_write\_ext        & \pageref{ffgextn} \\
@@ -10034,9 +10239,6 @@ fits\_write\_exthdr        & \pageref{ffphps} \\
 fits\_write\_grphdr       & \pageref{ffphpr} \\
 fits\_write\_grppar\_TYP & \pageref{ffpgpx} \\
 fits\_write\_hdu       & \pageref{ffwrhdu} \\
-\end{tabular}
-\newpage
-\begin{tabular}{lr}
 fits\_write\_history      & \pageref{ffphis} \\
 fits\_write\_img        & \pageref{ffppr} \\
 fits\_write\_img\_null & \pageref{ffppru} \\
@@ -10071,6 +10273,8 @@ ffasfm    & \pageref{ffasfm} \\
 ffbnfm   & \pageref{ffbnfm} \\
 ffcalc     & \pageref{ffcalc} \\
 ffcalc\_rng     & \pageref{ffcalcrng} \\
+ffccls     & \pageref{ffccls} \\
+ffchtps    & \pageref{ffchtps} \\
 ffclos     & \pageref{ffclos} \\
 ffcmph & \pageref{ffcmph} \\
 ffcmps    & \pageref{ffcmps} \\
@@ -10104,6 +10308,7 @@ ffdsum  & \pageref{ffdsum} \\
 ffdt2s  & \pageref{ffdt2s} \\
 ffdtdm   & \pageref{ffdtdm} \\
 ffdtyp    & \pageref{ffdtyp} \\
+ffeopn    & \pageref{ffopen} \\
 ffeqty    & \pageref{ffgtcl} \\
 ffesum  & \pageref{ffesum} \\
 ffexest  & \pageref{ffexist} \\
@@ -10112,11 +10317,11 @@ ffffrw    & \pageref{ffffrw} \\
 ffflmd      & \pageref{ffflmd} \\
 ffflnm      & \pageref{ffflnm} \\
 ffflsh     & \pageref{ffflus} \\
+\end{tabular}
+\begin{tabular}{lr}
 ffflus     & \pageref{ffflus} \\
 fffree     & \pageref{ffgkls},  \pageref{ffhdr2str} \\
 fffrow    & \pageref{fffrow} \\
-\end{tabular}
-\begin{tabular}{lr}
 ffg2d\_      & \pageref{ffg2dx} \\
 ffg3d\_      & \pageref{ffg3dx} \\
 ffgabc      & \pageref{ffgabc} \\
@@ -10154,6 +10359,7 @@ ffgisz & \pageref{ffgisz} \\
 ffgkcl      & \pageref{ffgkcl} \\
 ffgkey      & \pageref{ffgkey} \\
 ffgkls  & \pageref{ffgkls} \\
+ffgksl  & \pageref{ffgksl} \\
 ffgkn\_     & \pageref{ffgknx} \\
 ffgknm    & \pageref{ffgknm} \\
 ffgky          & \pageref{ffgky} \\
@@ -10161,13 +10367,13 @@ ffgkyn         & \pageref{ffgkyn} \\
 ffgkyt   & \pageref{ffgkyt} \\
 ffgky\_      & \pageref{ffgkyx} \\
 ffgmcp   & \pageref{ffgmcp} \\
+
+\end{tabular}
+\begin{tabular}{lr}
 ffgmng  & \pageref{ffgmng} \\
 ffgmop    & \pageref{ffgmop} \\
 ffgmrm   & \pageref{ffgmrm} \\
 ffgmsg    & \pageref{ffgmsg} \\
-
-\end{tabular}
-\begin{tabular}{lr}
 ffgmtf  & \pageref{ffgmtf} \\
 ffgncl     & \pageref{ffgnrw} \\
 ffgnrw     & \pageref{ffgnrw} \\
@@ -10181,7 +10387,8 @@ ffgpxf  & \pageref{ffgpxf} \\
 ffgrec       & \pageref{ffgrec} \\
 ffgrsz    & \pageref{ffgrsz} \\
 ffgsdt        & \pageref{ffdt2s} \\
-ffgsf\_ & \pageref{ffgsfx} \pageref{ffgsfx2} \\
+ffgsf\_ &  \pageref{ffgsfx} \pageref{ffgsfx2} \\
+ffgsky  &  \pageref{ffgsky} \\
 ffgstm        & \pageref{ffdt2s} \\
 ffgstr         & \pageref{ffgcrd} \\
 ffgsv  & \pageref{ffgsv} \\
@@ -10208,18 +10415,19 @@ ffibin    & \pageref{ffibin} \\
 fficls  & \pageref{fficls} \\
 fficol   & \pageref{fficol} \\
 ffifile  & \pageref{ffiurl} \\
+ffihtps  & \pageref{ffihtps} \\
 ffiimg     & \pageref{ffiimg} \\
 ffikls    & \pageref{ffikyx} \\
+
+\end{tabular}
+\begin{tabular}{lr}
+
 ffikyu   & \pageref{ffikyu} \\
 ffiky\_    & \pageref{ffikyx} \\
 ffimem  & \pageref{ffimem} \\
 ffinit  & \pageref{ffinit} \\
 ffinttyp    & \pageref{ffinttyp} \\
 ffiopn & \pageref{ffopen} \\
-
-\end{tabular}
-\begin{tabular}{lr}
-
 ffirec     & \pageref{ffirec} \\
 ffirow  & \pageref{ffirow} \\
 ffitab    & \pageref{ffitab} \\
@@ -10262,16 +10470,16 @@ ffphis      & \pageref{ffphis} \\
 ffphpr       & \pageref{ffphpr} \\
 ffphps       & \pageref{ffphps} \\
 ffphtb      & \pageref{ffphtb} \\
+
+\end{tabular}
+\begin{tabular}{lr}
+
 ffpkls  & \pageref{ffpkls} \\
 ffpkn\_     & \pageref{ffpknx} \\
 ffpktp & \pageref{ffpktp} \\
 ffpky          & \pageref{ffpky} \\
 ffpkyt   & \pageref{ffpkyt} \\
 ffpkyu     & \pageref{ffpkyu} \\
-
-\end{tabular}
-\begin{tabular}{lr}
-
 ffpky\_      & \pageref{ffpkyx} \\
 ffplsw & \pageref{ffplsw} \\
 ffpmrk   & \pageref{ffpmrk} \\
@@ -10314,22 +10522,24 @@ fftnul   & \pageref{fftnul} \\
 fftopn & \pageref{ffopen} \\
 fftplt & \pageref{fftplt} \\
 fftrec    & \pageref{fftrec} \\
+
+
+\end{tabular}
+\newpage
+\begin{tabular}{lr}
+
 fftscl     & \pageref{fftscl} \\
 ffucrd       & \pageref{ffucrd} \\
 ffukls    & \pageref{ffukyx} \\
 ffuky        & \pageref{ffuky} \\
 ffukyu   & \pageref{ffukyu} \\
 ffuky\_    & \pageref{ffukyx} \\
-
-\end{tabular}
-\newpage
-\begin{tabular}{lr}
-
 ffupch      & \pageref{ffupch} \\
 ffupck  & \pageref{ffupck} \\
 ffurlt  & \pageref{ffurlt} \\
 ffvcks  & \pageref{ffvcks} \\
 ffvers    & \pageref{ffvers} \\
+ffvhtps  & \pageref{ffvhtps} \\
 ffwldp & \pageref{ffwldp} \\
 ffwrhdu  & \pageref{ffwrhdu} \\
 ffxypx & \pageref{ffxypx} \\
@@ -10351,8 +10561,6 @@ bitpix   - bits per pixel. The following symbolic mnemonics are predefined:
                LONGLONG_IMG =  64 (signed long 64-bit integer)
                FLOAT_IMG  = -32 (float)
                DOUBLE_IMG = -64 (double).
-           The LONGLONG_IMG type is experimental and is not officially
-           recognized in the FITS Standard document.
            Two additional values, USHORT_IMG and ULONG_IMG are also available
            for creating unsigned integer images.  These are equivalent to
            creating a signed integer image with BZERO offset keyword values
