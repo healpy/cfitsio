@@ -46,7 +46,7 @@ USA}
 \vfill
 \bigskip
 \begin{center}
-{\Large May 2019\\}
+{\Large Mar 2020\\}
 \end{center}
 \vfill
 \end{titlepage}
@@ -1707,12 +1707,14 @@ fits\_open\_data except they will move to the first significant table
 HDU or image HDU in the file, respectively, if a HDU name or
 number is not specified as part of the filename.
 
-The fits\_open\_extname routine opens the file and attempts to move to a 'useful'
-HDU. If after opening the file CFITSIO is pointing to null primary array,
-then CFITSIO will attempt to move to the first extension that has an EXTNAME or
-HDUNAME keyword value that matches one of the names in the input extlist
-space-delimited list of names.  If that fails, then CFITSIO simply moves to the
-2nd HDU in the file.
+The fits\_open\_extlist routine opens the file and attempts to move to
+a 'useful' HDU. If after opening the file CFITSIO is pointing to null
+primary array, then CFITSIO will attempt to move to the first
+extension that has an EXTNAME or HDUNAME keyword value that matches
+one of the names in the input extlist space-delimited list of names
+(wildcards are permitted).  If that fails, then CFITSIO simply moves
+to the 2nd HDU in the file.  Upon return, the type of the HDU is
+returned in *hdutype, as described in \ref{ffmahd} HDU Access Routines.
 
 IRAF images (.imh format files) and raw binary data arrays may also be
 opened with READONLY access.  CFITSIO will automatically test if the
@@ -1871,17 +1873,19 @@ as a whole.
     specified absolute HDU number (starting with 1 for the primary
     array) in the FITS file, and the second routine moves a relative
     number HDUs forward or backward from the current HDU.  A null
-    pointer may be given for the hdutype parameter if it's value is not
-    needed.  The third routine moves to the (first) HDU which has the
-    specified extension type and EXTNAME and EXTVER keyword values (or
-    HDUNAME and HDUVER keywords).  The hdutype parameter may have a
-    value of IMAGE\_HDU, ASCII\_TBL, BINARY\_TBL, or ANY\_HDU where
-    ANY\_HDU means that only the extname and extver values will be used
-    to locate the correct extension.  If the input value of extver is 0
-    then the EXTVER keyword is ignored and the first HDU with a
-    matching EXTNAME (or HDUNAME) keyword will be found.  If no
-    matching HDU is found in the file then the current HDU will remain
-    unchanged and a status = BAD\_HDU\_NUM will be returned.
+    pointer may be given for the hdutype parameter if it's value is
+    not needed.  The third routine moves to the (first) HDU which has
+    the specified extension type and EXTNAME and EXTVER keyword values
+    (or HDUNAME and HDUVER keywords).  The extname parameter may
+    contain wildcards, as accepted by fits\_compare\_str().  The
+    hdutype parameter may have a value of IMAGE\_HDU, ASCII\_TBL,
+    BINARY\_TBL, or ANY\_HDU where ANY\_HDU means that only the
+    extname and extver values will be used to locate the correct
+    extension.  If the input value of extver is 0 then the EXTVER
+    keyword is ignored and the first HDU with a matching EXTNAME (or
+    HDUNAME) keyword will be found.  If no matching HDU is found in
+    the file then the current HDU will remain unchanged and a status =
+    BAD\_HDU\_NUM will be returned.
   \label{ffmahd} \label{ffmrhd} \label{ffmnhd}
 \end{description}
 
@@ -2984,6 +2988,28 @@ efficient block size.
       (fitsfile *fptr, int tbltype, LONGLONG naxis2, int tfields, char *ttype[],
        char *tform[], char *tunit[], char *extname, int *status)
 \end{verbatim}
+
+\begin{description}
+\item[2 ] Copy the structure of an open table to a new table, optionally
+    copying zero or more rows from the input table.  This is useful in
+    cases where a task will filter rows from the input before transferring
+    to the output, so a ``pristine'' output table with zero rows is
+    desired to start.  The input file must be open and point to a binary table
+    extension.  The output file must be open for writing; a new
+    extension is created with the same table structure as the input.
+    Optionally, a range of nrows may be copied starting from firstrow,
+    similar to fits_copy_rows(). The value nrows may be 0.  Note that
+    the first row in a table is at row = 1.
+   \label{ffcpht}
+\end{description}
+
+\begin{verbatim}
+  int fits_copy_hdutab / ffcpht
+      (fitsfile *infptr, fitsfile *outfptr, LONGLONG firstrow,
+       LONGLONG nrows, > int *status)
+\end{verbatim}
+
+
 
 \subsection{Column Information Routines}
 
@@ -4373,11 +4399,19 @@ The following output patterns are special:
 
     "-" - do not copy a keyword that matches the corresponding input pattern
 
+    "--" - if match occurs, outrec will have "-KEYNAME"
+
     "+" - copy the input unchanged
 
 The inrec string could be just the 8-char keyword name, or the entire
 80-char header record.  Characters 9 - 80 in the input string simply get
 appended to the translated keyword name.
+
+Upon return, outrec will have the converted string, starting from the
+pattern[i][1] pattern and applying the numerical substitutions as 
+described above. If the output pattern is "--" then the resulting
+outrec will be "-KEYNAME", which may indicate to the calling
+routine that KEYNAME is to be deleted.
 
 If n\_range = 0, then only keywords with 'n' equal to n\_value will be
 considered as a pattern match.  If n\_range = +1, then all values of
@@ -4444,7 +4478,13 @@ an IMAGE extension:
 \begin{description}
 \item[21]  Translate the keywords in the input HDU into the keywords that are
 appropriate for the output HDU.  This is a driver routine that calls
-the previously described routine.
+the previously described routine for all keywords in the HDU.
+
+It is allowed for infptr and outfptr to point to the same HDU.
+
+If any output matched patterns are of the form "-KEYNAME" then
+this routine will attempt to delete the keyword KEYNAME.  It is
+not an error if KEYNAME is not present in the output HDU.
 \end{description}
 
 \begin{verbatim}
@@ -8561,6 +8601,20 @@ HDUs in the input file will be copied into the temporary file).
     absolute row number, only a relative offset.  Rows that fall outside
     the table will be treated as undefined, or NULLs.
 
+%% <!-- IMPORTANT NOTE IMPORTANT NOTE IMPORTANT NOTE -->
+%% <!-- If you edit this file then you must also edit 
+%%      the following other locations where calculator 
+%%      expressions are documented:
+%%         heacore/cfitsio/docs/cfitsio.tex
+%%         heacore/cfitsio/docs/fitsio.tex
+%%         heatools/help/calc_express.html
+%%         heatools/ftcalc/ftcalc.html
+%%         heatools/ftselect/ftselect.html
+%%         ftools/futils/tasks/fselect/fselect.hlp
+%%         ftools/futils/tasks/fcalc/fcalc.hlp
+%%         ftools/guis/fv/doc/expressions.html
+%%   -->
+
     Boolean   operators can be  used in  the expression  in either their
     Fortran or C forms.  The following boolean operators are available:
 
@@ -8572,69 +8626,74 @@ HDUs in the input file will be copied into the temporary file).
     "negation"     .not. .NOT. !  "approx. equal(1e-7)"  ~
 \end{verbatim}
 
-Note  that the exclamation
-point,  '!', is a special UNIX character, so if it is used  on the
-command line rather than entered at a task prompt, it must be  preceded
-by a backslash to force the UNIX shell to ignore it.
+Note that the exclamation point, '!', is a special UNIX character, so
+if it is used on the command line rather than entered at a task
+prompt, it must be preceded by a backslash to force the UNIX shell to
+ignore it.
 
-    The expression may  also include arithmetic operators and functions.
-    Trigonometric  functions use  radians,  not degrees.  The  following
-    arithmetic  operators and  functions  can be  used in the expression
-    (function names are case insensitive). A null value will be returned
-    in case of illegal operations such as divide by zero, sqrt(negative)
-    log(negative), log10(negative), arccos(.gt. 1), arcsin(.gt. 1).
-
+The expression may  also include arithmetic operators and functions.
+Trigonometric  functions use  radians,  not degrees.  The  following
+arithmetic  operators and  functions  can be  used in the expression
+(function names are case insensitive).  A null value will be returned
+in case of illegal operations such as divide by zero, sqrt(negative)
+log(negative), log10(negative), arccos(.gt. 1), arcsin(.gt. 1).
 
 \begin{verbatim}
-    "addition"          +          "subtraction"          -
-    "multiplication"    *          "division"             /
-    "negation"          -          "exponentiation"       **   ^
-    "absolute value"    abs(x)     "cosine"                cos(x)
-    "sine"              sin(x)     "tangent"               tan(x)
-    "arc cosine"        arccos(x)  "arc sine"              arcsin(x)
-    "arc tangent"       arctan(x)  "arc tangent"           arctan2(y,x)
-    "hyperbolic cos"    cosh(x)    "hyperbolic sin"        sinh(x)
-    "hyperbolic tan"    tanh(x)    "round to nearest int"  round(x)
-    "round down to int" floor(x)   "round up to int"       ceil(x)
-    "exponential"       exp(x)     "square root"           sqrt(x)
-    "natural log"       log(x)     "common log"            log10(x)
-    "modulus"           x % y      "random # [0.0,1.0)"    random()
-    "random Gaussian"   randomn()  "random Poisson"        randomp(x)
-    "minimum"           min(x,y)   "maximum"               max(x,y)
-    "cumulative sum"    accum(x)   "sequential difference" seqdiff(x)
-    "if-then-else"      b?x:y
-    "angular separation"  angsep(ra1,dec1,ra2,de2) (all in degrees)
-    "substring"      strmid(s,p,n) "string search"         strstr(s,r)
+    "addition"           +          "subtraction"          -
+    "multiplication"     *          "division"             /
+    "negation"           -          "exponentiation"       **   ^
+    "absolute value"     abs(x)     "cosine"               cos(x)
+    "sine"               sin(x)     "tangent"              tan(x)
+    "arc cosine"         arccos(x)  "arc sine"             arcsin(x)
+    "arc tangent"        arctan(x)  "arc tangent"          arctan2(y,x)
+    "hyperbolic cos"     cosh(x)    "hyperbolic sin"       sinh(x)
+    "hyperbolic tan"     tanh(x)    "round to nearest int" round(x)
+    "round down to int"  floor(x)   "round up to int"      ceil(x)
+    "exponential"        exp(x)     "square root"          sqrt(x)
+    "natural log"        log(x)     "common log"           log10(x)
+    "modulus"            x % y      
+    "bitwise AND"        x & y      "bitwise OR"           x | y
+    "bitwise XOR"        x ^^ y     (bitwise operators are 32-bit int only)
+    "random # [0.0,1.0)" random()
+    "random Gaussian"    randomn()  "random Poisson"       randomp(x)
+    "minimum"            min(x,y)   "maximum"              max(x,y)
+    "cumulative sum"     accum(x)   "sequential difference" seqdiff(x)
+    "if-then-else"       b?x:y
+    "angular separation" angsep(ra1,dec1,ra2,de2) (all in degrees)
+    "substring"          strmid(s,p,n) "string search"     strstr(s,r)
 \end{verbatim}
-Three different random number functions are provided:  random(), with
+The bitwise operators for AND, OR and XOR operate upon 32-bit integer 
+expressions only.
+
+Three different random number functions are provided: random(), with
 no arguments, produces a uniform random deviate between 0 and 1;
 randomn(), also with no arguments, produces a normal (Gaussian) random
-deviate  with zero mean and unit standard deviation; randomp(x)
+deviate with zero mean and unit standard deviation; randomp(x)
 produces a Poisson random deviate whose expected number of counts is
 X.  X may be any positive real number of expected counts, including
 fractional values, but the return value is an integer.
 
 When the random functions are used in a vector expression, by default
-the same random value will be used when evaluating each element of the vector.
-If different random numbers are desired, then the name of a vector
-column should be supplied as the single argument to the random
-function (e.g., "flux + 0.1 * random(flux)", where "flux' is the
-name of a vector column).  This will create a vector of
-random numbers that will be used in sequence when evaluating each
-element of the vector expression.
+the same random value will be used when evaluating each element of the
+vector.  If different random numbers are desired, then the name of a
+vector column should be supplied as the single argument to the random
+function (e.g., "flux + 0.1 * random(flux)", where "flux" is the name
+of a vector column).  This will create a vector of random numbers that
+will be used in sequence when evaluating each element of the vector
+expression.
 
 An alternate syntax for the min and max functions  has only a single
 argument which  should be  a  vector value (see  below).  The result
 will be the minimum/maximum element contained within the vector.
 
-The accum(x) function forms the cumulative sum of x, element by element.
-Vector columns are supported simply by performing the summation process
-through all the values.  Null values are treated as 0.  The seqdiff(x)
-function forms the sequential difference of x, element by element.
-The first value of seqdiff is the first value of x.  A single null
-value in x causes a pair of nulls in the output.  The seqdiff and
-accum functions are functional inverses, i.e., seqdiff(accum(x)) == x
-as long as no null values are present.
+The accum(x) function forms the cumulative sum of x, element by
+element.  Vector columns are supported simply by performing the
+summation process through all the values.  Null values are treated as
+0.  The seqdiff(x) function forms the sequential difference of x,
+element by element.  The first value of seqdiff is the first value of
+x.  A single null value in x causes a pair of nulls in the output.
+The seqdiff and accum functions are functional inverses, i.e.,
+seqdiff(accum(x)) == x as long as no null values are present.
 
 In the if-then-else expression, "b?x:y", b is an explicit boolean
 value or expression.  There is no automatic type conversion from
@@ -8642,11 +8701,11 @@ numeric to boolean values, so one needs to use "iVal!=0" instead of
 merely "iVal" as the boolean argument. x and y can be any scalar data
 type (including string).
 
-The angsep function computes the angular separation in degrees
-between 2 celestial positions, where the first 2 parameters
-give the RA-like and Dec-like coordinates (in decimal degrees)
-of the first position, and the 3rd and 4th parameters give the
-coordinates of the second position.
+The angsep function computes the angular separation in degrees between
+2 celestial positions, where the first 2 parameters give the RA-like
+and Dec-like coordinates (in decimal degrees) of the first position,
+and the 3rd and 4th parameters give the coordinates of the second
+position.
 
 The substring function strmid(S,P,N) extracts a substring from S,
 starting at string position P, with a substring length N.  The first
@@ -8654,14 +8713,14 @@ character position in S is labeled as 1. If P is 0, or refers to a
 position beyond the end of S, then the extracted substring will be
 NULL.  S, P, and N may be functions of other columns.
 
-The string search function strstr(S,R) searches for the first occurrence
-of the substring R in S.  The result is an integer, indicating the
-character position of the first match (where 1 is the first character
-position of S).  If no match is found, then strstr() returns a NULL
-value.
+The string search function strstr(S,R) searches for the first
+occurrence of the substring R in S.  The result is an integer,
+indicating the character position of the first match (where 1 is the
+first character position of S).  If no match is found, then strstr()
+returns a NULL value.
 
-The  following  type  casting  operators  are  available,  where the
-inclosing parentheses are required and taken  from  the  C  language
+The following type casting operators are available, where the
+enclosing parentheses are required and taken from the C language
 usage. Also, the integer to real casts values to double precision:
 
 \begin{verbatim}
@@ -8682,6 +8741,20 @@ usage. Also, the integer to real casts values to double precision:
     A  string constant must  be enclosed  in quotes  as in  'Crab'.  The
     "null" constants  are useful for conditionally  setting table values
     to a NULL, or undefined, value (eg., "col1==-99 ? \#NULL : col1").
+
+    Integer constants may be specified using the following notation,
+\begin{verbatim}
+           13245   decimal integer
+           0x12f3  hexidecimal integer
+           0o1373  octal integer
+           0b01001 binary integer
+\end{verbatim}
+    Note that integer constants are only allowed to be 32-bit, i.e.
+    between -2\^(31) and +2\^(31).  Integer constants may be used in any
+    arithmetic expression where an integer would be appropriate.  Thus,
+    they are distinct from bitmasks (which may be of arbitrary length,
+    allow the "wildcard" bit, and may only be used in logical
+    expressions; see below).
 
     There is also a function for testing if  two  values  are  close  to
     each  other,  i.e.,  if  they are "near" each other to within a user
@@ -8709,9 +8782,6 @@ usage. Also, the integer to real casts values to double precision:
     returns the value of x if x is not NULL, otherwise  it  returns  the
     value of y.
 
-
-
-
 \subsection{Bit Masks}
 
     Bit  masks can be used to select out rows from bit columns (TFORMn =
@@ -8728,7 +8798,10 @@ usage. Also, the integer to real casts values to double precision:
     In  all  the  representations, an x or X is allowed in the mask as a
     wild card. Note that the x represents a  different  number  of  wild
     card  bits  in  each  representation.  All  representations are case
-    insensitive.
+    insensitive.  Although bitmasks may be of arbitrary length and contain
+    a wildcard, they may only be used in logical expressions, unlike 
+    integer constants (see above) which may be used in any arithmetic
+    expression.
 
     To construct the boolean expression using the mask  as  the  boolean
     equal  operator  described above on a bit table column. For example,
@@ -10041,6 +10114,7 @@ fits\_copy\_data      & \pageref{ffcpdt} \\
 fits\_copy\_file      & \pageref{ffcpfl} \\
 fits\_copy\_group    & \pageref{ffgtcp} \\
 fits\_copy\_hdu       & \pageref{ffcopy} \\
+fits\_copy\_hdutab    & \pageref{ffcpht} \\
 fits\_copy\_header    & \pageref{ffcphd} \\
 fits\_copy\_image2cell & \pageref{copycell} \\
 fits\_copy\_image\_section  & \pageref{ffcpimg} \\
@@ -10329,6 +10403,7 @@ ffcpcl     & \pageref{ffcpcl} \\
 ffcpdt      & \pageref{ffcpdt} \\
 ffcpfl      & \pageref{ffcpfl} \\
 ffcphd   & \pageref{ffcphd} \\
+ffcpht   & \pageref{ffcpht} \\
 ffcpimg  & \pageref{ffcpimg} \\
 ffcpky       & \pageref{ffcpky} \\
 ffcprw      &   \pageref{ffcprw} \\
