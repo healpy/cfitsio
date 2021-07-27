@@ -385,7 +385,7 @@ int compress2mem_from_mem(
     c_stream.opaque = (voidpf)0;
 
     /* Initialize the compression.  The argument (15+16) tells the 
-       compressor that we are to use the gzip algorythm.
+       compressor that we are to use the gzip algorithm.
        Also use Z_BEST_SPEED for maximum speed with very minor loss
        in compression factor. */
     err = deflateInit2(&c_stream, Z_BEST_SPEED, Z_DEFLATED,
@@ -467,7 +467,7 @@ int compress2file_from_mem(
     c_stream.opaque = (voidpf)0;
 
     /* Initialize the compression.  The argument (15+16) tells the 
-       compressor that we are to use the gzip algorythm.
+       compressor that we are to use the gzip algorithm.
        Also use Z_BEST_SPEED for maximum speed with very minor loss
        in compression factor. */
     err = deflateInit2(&c_stream, Z_BEST_SPEED, Z_DEFLATED,

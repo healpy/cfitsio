@@ -130,7 +130,7 @@ int fffrow( fitsfile *fptr,         /* I - Input FITS file                   */
 
       if( ffiter( gParse.nCols, gParse.colData, firstrow-1, 0,
                   parse_data, (void*)&Info, status ) == -1 )
-         *status = 0;  /* -1 indicates exitted without error before end... OK */
+         *status = 0;  /* -1 indicates exited without error before end... OK */
 
       if( *status ) {
 
@@ -468,7 +468,7 @@ int ffcrow( fitsfile *fptr,      /* I - Input FITS file                      */
    
    if( ffiter( gParse.nCols, gParse.colData, firstrow-1, 0,
                parse_data, (void*)&Info, status ) == -1 )
-      *status=0;  /* -1 indicates exitted without error before end... OK */
+      *status=0;  /* -1 indicates exited without error before end... OK */
 
    *anynul = Info.anyNull;
    ffcprs();
@@ -882,7 +882,7 @@ int ffiprs( fitsfile *fptr,      /* I - Input FITS file                     */
    gParse.index    = 0;
    gParse.is_eobuf = 0;
 
-   /*  Parse the expression, building the Nodes and determing  */
+   /*  Parse the expression, building the Nodes and determining  */
    /*  which columns are needed and what data type is returned  */
 
    ffrestart(NULL);
@@ -2006,7 +2006,7 @@ int uncompress_hkdata( fitsfile *fptr,
       if( ffgcvd( fptr, gParse.timeCol, row, 1L, 1L, 0.0,
                   &newtime, &anynul, status ) ) return( *status );
       if( newtime != currtime ) {
-         /*  New time encountered... propogate parameters to next row  */
+         /*  New time encountered... propagate parameters to next row  */
          if( currelem==ntimes ) {
             ffpmsg("Found more unique time stamps than caller indicated");
             return( *status = PARSE_BAD_COL );
@@ -2128,7 +2128,7 @@ int ffffrw( fitsfile *fptr,         /* I - Input FITS file                   */
    } else {
       if( ffiter( gParse.nCols, gParse.colData, 0, 0,
                   ffffrw_work, (void*)rownum, status ) == -1 )
-         *status = 0;  /* -1 indicates exitted without error before end... OK */
+         *status = 0;  /* -1 indicates exited without error before end... OK */
    }
 
    ffcprs();

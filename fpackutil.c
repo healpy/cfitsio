@@ -126,7 +126,7 @@ int fp_tmpnam(char *suffix, char *rootname, char *tmpnam)
 	int maxtry = 30, ii;
 
 	if (strlen(suffix) + strlen(rootname) > SZ_STR-5) {
-	    fp_msg ("Error: filename is too long to create tempory file\n"); exit (-1);
+	    fp_msg ("Error: filename is too long to create temporary file\n"); exit (-1);
 	}
 
 	strcpy (tmpnam, rootname);  /* start with rootname */
@@ -398,7 +398,7 @@ int fp_preflight (int argc, char *argv[], int unpack, fpstate *fpptr)
 	      /* check that input file  exists */
 	      if (infits[0] != '-') {  /* if not reading from stdin stream */
 	         if (fp_access (infits) != 0) {  /* if not, then check if */
-		    strcat(infits, ".fz");       /* a .fz version exsits */
+		    strcat(infits, ".fz");       /* a .fz version exists */
 	            if (fp_access (infits) != 0) {
                         namelen = strlen(infits);
                         infits[namelen - 3] = '\0';  /* remove the .fz suffix */
@@ -514,7 +514,7 @@ int fp_preflight (int argc, char *argv[], int unpack, fpstate *fpptr)
 		        fp_msg ("Error: input file name too long:\n "); fp_msg (infits);
 		        fp_msg ("\n "); fp_noop (); exit (-1);
                     }
-		    strcat(infits, ".gz");     /* a gzipped version exsits */
+		    strcat(infits, ".gz");     /* a gzipped version exists */
 	            if (fp_access (infits) != 0) {
                         namelen = strlen(infits);
                         infits[namelen - 3] = '\0';  /* remove the .gz suffix */
@@ -668,7 +668,7 @@ int fp_loop (int argc, char *argv[], int unpack, fpstate fpvar)
 	      /* find input file */
 	      if (infits[0] != '-') {  /* if not reading from stdin stream */
 	         if (fp_access (infits) != 0) {  /* if not, then */
-		    strcat(infits, ".fz");       /* a .fz version must exsit */
+		    strcat(infits, ".fz");       /* a .fz version must exist */
                     /* fp_preflight already checked for enough size to add '.fz' */
 	         }
 	      }

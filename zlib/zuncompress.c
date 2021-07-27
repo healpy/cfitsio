@@ -163,7 +163,7 @@ int zuncompress2mem(char *filename,  /* name of input file                 */
     method = COMPRESSED;
     last_member = 1;
 
-    /* do the uncompression */
+    /* do the decompression */
     if ((*work)(ifd, ofd) != OK) {
         method = -1; /* force cleanup */
         *status = 414;    /* report some sort of decompression error */
@@ -175,7 +175,7 @@ int zuncompress2mem(char *filename,  /* name of input file                 */
 }
 /*=========================================================================*/
 /*=========================================================================*/
-/* this marks the begining of the original file 'unlzw.c'                  */
+/* this marks the beginning of the original file 'unlzw.c'                 */
 /*=========================================================================*/
 /*=========================================================================*/
 

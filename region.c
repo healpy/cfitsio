@@ -579,8 +579,8 @@ int fits_read_ascii_region( const char *filename,
 	      coords[7] = coords[6];
 	    }
 
-            /* Also, correct the position angle for any WCS rotation:  */
-            /*    If regions are specified in WCS coordintes, then the angles */
+            /* Also, correct the position angle for any WCS rotation: */
+            /*    If regions are specified in WCS coordinates, then the angles */
             /*    are relative to the WCS system, not the pixel X,Y system */
 
 	    if( cFmt!=pixel_fmt ) {	    

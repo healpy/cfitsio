@@ -1,4 +1,4 @@
-/*  This file, group.c, contains the grouping convention suport routines.  */
+/*  This file, group.c, contains the grouping convention support routines.  */
 
 /*  The FITSIO software was written by William Pence at the High Energy    */
 /*  Astrophysic Science Archive Research Center (HEASARC) at the NASA      */
@@ -49,7 +49,7 @@ D. Jennings, 01/02/99, ffgtop() now looks for relatve file paths when
                        the GRPLCn keyword value is supplied in the member
 		       HDU header.
 
-D. Jennings, 01/02/99, ffgtam() now trys to construct relative file paths
+D. Jennings, 01/02/99, ffgtam() now tries to construct relative file paths
                        from the member's file to the group table's file
 		       (and visa versa) when both the member's file and
 		       group table file are of access type FILE://.
@@ -82,7 +82,7 @@ int ffgtcr(fitsfile *fptr,      /* FITS file pointer                         */
 	   char    *grpname,    /* name of the grouping table                */
 	   int      grouptype,  /* code specifying the type of
 				   grouping table information:
-				   GT_ID_ALL_URI  0 ==> defualt (all columns)
+				   GT_ID_ALL_URI  0 ==> default (all columns)
 				   GT_ID_REF      1 ==> ID by reference
 				   GT_ID_POS      2 ==> ID by position
 				   GT_ID_ALL      3 ==> ID by ref. and position
@@ -135,7 +135,7 @@ int ffgtis(fitsfile *fptr,      /* FITS file pointer                         */
 	   char    *grpname,    /* name of the grouping table                */
 	   int      grouptype,  /* code specifying the type of
 				   grouping table information:
-				   GT_ID_ALL_URI  0 ==> defualt (all columns)
+				   GT_ID_ALL_URI  0 ==> default (all columns)
 				   GT_ID_REF      1 ==> ID by reference
 				   GT_ID_POS      2 ==> ID by position
 				   GT_ID_ALL      3 ==> ID by ref. and position
@@ -274,7 +274,7 @@ int ffgtis(fitsfile *fptr,      /* FITS file pointer                         */
 int ffgtch(fitsfile *gfptr,     /* FITS pointer to group                     */
 	   int       grouptype, /* code specifying the type of
 				   grouping table information:
-				   GT_ID_ALL_URI  0 ==> defualt (all columns)
+				   GT_ID_ALL_URI  0 ==> default (all columns)
 				   GT_ID_REF      1 ==> ID by reference
 				   GT_ID_POS      2 ==> ID by position
 				   GT_ID_ALL      3 ==> ID by ref. and position
@@ -531,7 +531,7 @@ int ffgtch(fitsfile *gfptr,     /* FITS pointer to group                     */
 					status);
 
 	      for(j = 1; j <= nrows && *status == 0; ++j)
-	    /* WILL THIS WORK FOR VAR LENTH CHAR COLS??????*/
+	    /* WILL THIS WORK FOR VAR LENGTH CHAR COLS??????*/
 		*status = fits_write_col_byt(gfptr,colnum,j,1,1,charNull,
 					     status);
 	    }
@@ -650,7 +650,7 @@ int ffgtcp(fitsfile *infptr,  /* input FITS file pointer                     */
 	   fitsfile *outfptr, /* output FITS file pointer                    */
 	   int        cpopt,  /* code specifying copy options:
 				OPT_GCP_GPT (0) ==> copy only grouping table
-				OPT_GCP_ALL (2) ==> recusrively copy members 
+				OPT_GCP_ALL (2) ==> recursively copy members 
 				                    and their members (if 
 						    groups)                  */
 	   int      *status)  /* return status code                          */
@@ -659,7 +659,7 @@ int ffgtcp(fitsfile *infptr,  /* input FITS file pointer                     */
   copy a grouping table, and optionally all its members, to a new FITS file.
   If the cpopt is set to OPT_GCP_GPT (copy grouping table only) then the 
   existing members have their GRPIDn and GRPLCn keywords updated to reflect 
-  the existance of the new group, since they now belong to another group. If 
+  the existence of the new group, since they now belong to another group. If 
   cpopt is set to OPT_GCP_ALL (copy grouping table and members recursively) 
   then the original members are not updated; the new grouping table is 
   modified to include only the copied member HDUs and not the original members.
@@ -884,7 +884,7 @@ int ffgtcm(fitsfile *gfptr,  /* FITS file pointer to grouping table          */
 int ffgtvf(fitsfile *gfptr,       /* FITS file pointer to group             */
 	   long     *firstfailed, /* Member ID (if positive) of first failed
 				     member HDU verify check or GRPID index
-				     (if negitive) of first failed group
+				     (if negative) of first failed group
 				     link verify check.                     */
 	   int      *status)      /* return status code                     */
 
@@ -1210,7 +1210,7 @@ int ffgtop(fitsfile *mfptr,  /* FITS file pointer to the member HDU          */
 	      
 	      *status = fits_relurl2url(url[i],keyvalue,location,status);
 	      
-	      /* if an error occured then contniue */
+	      /* if an error occurred then continue */
 	      
 	      if(*status != 0) 
 		{
@@ -1253,7 +1253,7 @@ int ffgtop(fitsfile *mfptr,  /* FITS file pointer to the member HDU          */
 
 	}while(0); /* end of file opening loop */
 
-      /* if an error occured with the file opening then exit */
+      /* if an error occurred with the file opening then exit */
 
       if(*status != 0) continue;
   
@@ -1298,7 +1298,7 @@ int ffgtam(fitsfile *gfptr,   /* FITS file pointer to grouping table HDU     */
   have the appropriate GRPIDn and GRPLCn keywords created in its header.
 
   Note that if the member HDU to be added to the grouping table is already
-  a member of the group then it will not be added a sceond time.
+  a member of the group then it will not be added a second time.
 */
 
 {
@@ -1687,7 +1687,7 @@ int ffgtam(fitsfile *gfptr,   /* FITS file pointer to grouping table HDU     */
 	  if(strlen(memberExtname) != 0)
 	    fits_write_col_str(gfptr,extnameCol,nmembers,1,1,tmpPtr,status);
 	  else
-	    /* WILL THIS WORK FOR VAR LENTH CHAR COLS??????*/
+	    /* WILL THIS WORK FOR VAR LENGTH CHAR COLS??????*/
 	    fits_write_col_byt(gfptr,extnameCol,nmembers,1,1,charNull,status);
 	}
 
@@ -1714,7 +1714,7 @@ int ffgtam(fitsfile *gfptr,   /* FITS file pointer to grouping table HDU     */
 	          strncmp(tmprootname, grootname, FLEN_FILENAME))
 	    fits_write_col_str(gfptr,locationCol,nmembers,1,1,tmpPtr,status);
 	  else
-	    /* WILL THIS WORK FOR VAR LENTH CHAR COLS??????*/
+	    /* WILL THIS WORK FOR VAR LENGTH CHAR COLS??????*/
 	    fits_write_col_byt(gfptr,locationCol,nmembers,1,1,charNull,status);
 	}
 
@@ -1734,7 +1734,7 @@ int ffgtam(fitsfile *gfptr,   /* FITS file pointer to grouping table HDU     */
 	          strncmp(tmprootname, grootname, FLEN_FILENAME))
 	    fits_write_col_str(gfptr,uriCol,nmembers,1,1,tmpPtr,status);
 	  else
-	    /* WILL THIS WORK FOR VAR LENTH CHAR COLS??????*/
+	    /* WILL THIS WORK FOR VAR LENGTH CHAR COLS??????*/
 	    fits_write_col_byt(gfptr,uriCol,nmembers,1,1,charNull,status);
 	}
     } while(0);
@@ -2010,7 +2010,7 @@ int ffgmng(fitsfile *mfptr,   /* FITS file pointer to member HDU            */
   return the number of groups to which a HDU belongs, as defined by the number
   of GRPIDn/GRPLCn keyword records that appear in the HDU header. The 
   fitsfile pointer mfptr must be positioned with the member HDU as the CHDU. 
-  Each time this function is called, the indicies of the GRPIDn/GRPLCn
+  Each time this function is called, the indices of the GRPIDn/GRPLCn
   keywords are checked to make sure they are continuous (ie no gaps) and
   are re-enumerated to eliminate gaps if gaps are found to be present.
 */
@@ -2415,7 +2415,7 @@ int ffgmop(fitsfile *gfptr,  /* FITS file pointer to grouping table          */
 		     CASE 3:
 
 		     If we got this far then the URL does not specify an
-		     absoulte file path or URL with access method. Since 
+		     absolute file path or URL with access method. Since 
 		     the path to the group table's file is (obviously) valid 
 		     for the CWD, create a full location string for the
 		     member HDU using the grouping table URL as a basis
@@ -2606,7 +2606,7 @@ int ffgmop(fitsfile *gfptr,  /* FITS file pointer to grouping table          */
 
 	  /*
 	    try to find the member hdu in the the FITS file pointed to
-	    by mfptr based upon its HDU posistion value. Note that is 
+	    by mfptr based upon its HDU position value. Note that is 
 	    impossible to verify if the HDU is actually the correct HDU due 
 	    to a lack of information.
 	  */
@@ -2932,7 +2932,7 @@ int ffgmtf(fitsfile *infptr,   /* FITS file pointer to source grouping table */
   member of the target group and remains a member of the source group. If
   the tfopt parameter is OPT_MCP_MOV then the member is deleted from the 
   source group after the transfer to the destination group. The member to be
-  transfered is identified by its row number within the source grouping table.
+  transferred is identified by its row number within the source grouping table.
 */
 
 {
@@ -2948,7 +2948,7 @@ int ffgmtf(fitsfile *infptr,   /* FITS file pointer to source grouping table */
     }
   else
     {
-      /* open the member of infptr to be transfered */
+      /* open the member of infptr to be transferred */
 
       *status = fits_open_member(infptr,member,&mfptr,status);
       
@@ -3114,7 +3114,7 @@ int ffgmrm(fitsfile *gfptr,  /* FITS file pointer to group table             */
 	  */
 
 	  /*
-	    there is no need to seach for and remove the GRPIDn/GRPLCn
+	    there is no need to search for and remove the GRPIDn/GRPLCn
 	    keywords from the member HDU if it has not been opened
 	    in READWRITE mode
 	  */
@@ -3306,7 +3306,7 @@ int ffgmrm(fitsfile *gfptr,  /* FITS file pointer to group table             */
 			if the absolute value of GRPIDn is equal to the
 			EXTVER value of the grouping table and (one of the 
 			possible two) grouping table file URL matches the
-			GRPLCn keyword value then we hava a match
+			GRPLCn keyword value then we have a match
 		      */
 		      
 		      if(strcmp(grplc,grpLocation1) == 0  || 
@@ -3620,14 +3620,14 @@ int ffvcfm(fitsfile *gfptr, int xtensionCol, int extnameCol, int extverCol,
 /*****************************************************************************/
 int ffgtdc(int   grouptype,     /* code specifying the type of
 				   grouping table information:
-				   GT_ID_ALL_URI  0 ==> defualt (all columns)
+				   GT_ID_ALL_URI  0 ==> default (all columns)
 				   GT_ID_REF      1 ==> ID by reference
 				   GT_ID_POS      2 ==> ID by position
 				   GT_ID_ALL      3 ==> ID by ref. and position
 				   GT_ID_REF_URI 11 ==> (1) + URI info 
 				   GT_ID_POS_URI 12 ==> (2) + URI info       */
 	   int   xtensioncol, /* does MEMBER_XTENSION already exist?         */
-	   int   extnamecol,  /* does MEMBER_NAME aleady exist?              */
+	   int   extnamecol,  /* does MEMBER_NAME already exist?              */
 	   int   extvercol,   /* does MEMBER_VERSION already exist?          */
 	   int   positioncol, /* does MEMBER_POSITION already exist?         */
 	   int   locationcol, /* does MEMBER_LOCATION already exist?         */
@@ -4003,7 +4003,7 @@ int ffgmul(fitsfile *mfptr,   /* pointer to the grouping table member HDU    */
 
 	  /*
 	     close the file pointed to by gfptr if it is non NULL to
-	     prepare for the next loop iterration
+	     prepare for the next loop iteration
 	  */
 
 	  if(gfptr != NULL)
@@ -4073,7 +4073,7 @@ int ffgmf(fitsfile *gfptr, /* pointer to grouping table HDU to search       */
    found then member is returned with a value of 0 and the status return
    code will be set to MEMBER_NOT_FOUND.
 
-   Note that the member HDU postion information is used to obtain a member
+   Note that the member HDU position information is used to obtain a member
    match only if the grouping table type is GT_ID_POS_URI or GT_ID_POS. This
    is because the position information can become invalid much more
    easily then the reference information for a group member.
@@ -4198,13 +4198,13 @@ int ffgmf(fitsfile *gfptr, /* pointer to grouping table HDU to search       */
       
       /*
 	if no location string was passed to the function then assume that
-	the calling application does not wish to use it as a comparision
-	critera ==> if we got this far then we have a match
+	the calling application does not wish to use it as a comparison
+	criteria ==> if we got this far then we have a match
       */
 
       if(location == NULL)
 	{
-	  ffpmsg("NULL Location string given ==> ingore location (ffgmf)");
+	  ffpmsg("NULL Location string given ==> ignore location (ffgmf)");
 	  *member = i;
 	  continue;
 	}
@@ -4212,7 +4212,7 @@ int ffgmf(fitsfile *gfptr, /* pointer to grouping table HDU to search       */
       /*
 	if the grouping table MEMBER_LOCATION column exists then read the
 	location URL for the member, else set the location string to
-	a zero-length string for subsequent comparisions
+	a zero-length string for subsequent comparisons
       */
 
       if(locationCol != 0)
@@ -4303,7 +4303,7 @@ int ffgmf(fitsfile *gfptr, /* pointer to grouping table HDU to search       */
 		  fits_clean_url(cwd,grpLocation1,status);
 		}
 	      
-	      /* create an absoute URL for the member */
+	      /* create an absolute URL for the member */
 
 	      fits_relurl2url(grpLocation1,mbrLocation1,mbrLocation3,status);
 	      
@@ -4512,7 +4512,7 @@ int ffgtcpr(fitsfile   *infptr,  /* input FITS file pointer                 */
 	    fitsfile   *outfptr, /* output FITS file pointer                */
 	    int         cpopt,   /* code specifying copy options:
 				    OPT_GCP_GPT (0) ==> cp only grouping table
-				    OPT_GCP_ALL (2) ==> recusrively copy 
+				    OPT_GCP_ALL (2) ==> recursively copy 
 				    members and their members (if groups)   */
 	    HDUtracker *HDU,     /* list of already copied HDUs             */
 	    int        *status)  /* return status code                      */
@@ -4520,7 +4520,7 @@ int ffgtcpr(fitsfile   *infptr,  /* input FITS file pointer                 */
 /*
   copy a Group to a new FITS file. If the cpopt parameter is set to 
   OPT_GCP_GPT (copy grouping table only) then the existing members have their 
-  GRPIDn and GRPLCn keywords updated to reflect the existance of the new group,
+  GRPIDn and GRPLCn keywords updated to reflect the existence of the new group,
   since they now belong to another group. If cpopt is set to OPT_GCP_ALL 
   (copy grouping table and members recursively) then the original members are 
   not updated; the new grouping table is modified to include only the copied 
@@ -4821,7 +4821,7 @@ int fftsad(fitsfile   *mfptr,       /* pointer to an member HDU             */
 /*
   add an HDU to the HDUtracker struct pointed to by HDU. The HDU is only 
   added if it does not already reside in the HDUtracker. If it already
-  resides in the HDUtracker then the new HDU postion and file name are
+  resides in the HDUtracker then the new HDU position and file name are
   returned in  newPosition and newFileName (if != NULL)
 */
 
@@ -4968,7 +4968,7 @@ void prepare_keyvalue(char *keyvalue) /* string containing keyword value     */
   strip off all single quote characters "'" and blank spaces from a keyword
   value retrieved via fits_read_key*() routines
 
-  this is necessary so that a standard comparision of keyword values may
+  this is necessary so that a standard comparison of keyword values may
   be made
 */
 
@@ -5014,10 +5014,10 @@ int fits_path2url(char *inpath,  /* input file path string                  */
 		  char *outpath, /* output file path string                 */
 		  int  *status)
   /*
-     convert a file path into its Unix-style equivelent for URL 
+     convert a file path into its Unix-style equivalent for URL 
      purposes. Note that this process is platform dependent. This
      function supports Unix, MSDOS/WIN32, VMS and Macintosh platforms. 
-     The plaform dependant code is conditionally compiled depending upon
+     The platform dependent code is conditionally compiled depending upon
      the setting of the appropriate C preprocessor macros.
    */
 {
@@ -5031,7 +5031,7 @@ int fits_path2url(char *inpath,  /* input file path string                  */
     //disk/path/filename
 
      All path segments may be null, so that a single file name is the
-     simplist case.
+     simplest case.
 
      The leading "//" becomes a single "/" if present. If no "//" is present,
      then make sure the resulting URL path is relative, i.e., does not
@@ -5059,7 +5059,7 @@ int fits_path2url(char *inpath,  /* input file path string                  */
      disk:\path\filename
 
      All path segments may be null, so that a single file name is the
-     simplist case.
+     simplest case.
 
      All back-slashes '\' become slashes '/'; if the path starts with a
      string of the form "X:" then it is replaced with "/X/"
@@ -5123,7 +5123,7 @@ int fits_path2url(char *inpath,  /* input file path string                  */
 
      node::disk:[path]filename.ext;version
 
-     Any part of the file path may be missing, so that in the simplist
+     Any part of the file path may be missing, so that in the simplest
      case a single file name/extension is given.
 
      all brackets "[", "]" and dots "." become "/"; dashes "-" become "..", 
@@ -5389,7 +5389,7 @@ int fits_url2path(char *inpath,  /* input file path string  */
      Note that this process is platform dependent. This
      function supports Unix, MSDOS/WIN32, VMS and Macintosh platforms. Each
      platform dependent code segment is conditionally compiled depending 
-     upon the setting of the appropriate C preprocesser macros.
+     upon the setting of the appropriate C preprocessor macros.
    */
 {
   char buff[FLEN_FILENAME];
@@ -5435,7 +5435,7 @@ int fits_url2path(char *inpath,  /* input file path string  */
     //disk/path/filename
 
      All path segments but the last may be null, so that a single file name 
-     is the simplist case.     
+     is the simplest case.     
   */
 
   if(absolute)
@@ -5457,7 +5457,7 @@ int fits_url2path(char *inpath,  /* input file path string  */
      disk:\path\filename
 
      All path segments but the last may be null, so that a single file name 
-     is the simplist case.
+     is the simplest case.
   */
 
   /*
@@ -5496,7 +5496,7 @@ int fits_url2path(char *inpath,  /* input file path string  */
      node::disk:[path]filename.ext;version
 
      Any part of the file path may be missing execpt filename.ext, so that in 
-     the simplist case a single file name/extension is given.
+     the simplest case a single file name/extension is given.
 
      if the path is specified as relative starting with "./" then the first
      part of the VMS path is "[.". If the path is relative and does not start
@@ -5560,7 +5560,7 @@ int fits_url2path(char *inpath,  /* input file path string  */
       else
 	{
 	  /*
-	    process the token as a a directory path segement
+	    process the token as a a directory path segment
 	  */
 
 	  if(absolute)
@@ -5594,7 +5594,7 @@ int fits_url2path(char *inpath,  /* input file path string  */
      disk:path:filename
 
      All path segments but the last may be null, so that a single file name 
-     is the simplist case.
+     is the simplest case.
   */
 
   /*
@@ -5639,7 +5639,7 @@ int fits_get_cwd(char *cwd,  /* IO current working directory string */
      Note that this process is platform dependent. This
      function supports Unix, MSDOS/WIN32, VMS and Macintosh platforms. Each
      platform dependent code segment is conditionally compiled depending 
-     upon the setting of the appropriate C preprocesser macros.
+     upon the setting of the appropriate C preprocessor macros.
    */
 {
 
@@ -5715,7 +5715,7 @@ int  fits_get_url(fitsfile *fptr,       /* I ptr to FITS file to evaluate    */
     {
       /* 
 	 retrieve the member HDU's file name as opened by ffopen() 
-	 and parse it into its constitutent pieces; get the currently
+	 and parse it into its constituent pieces; get the currently
 	 active driver token too
        */
 	  
@@ -5939,21 +5939,21 @@ int  fits_get_url(fitsfile *fptr,       /* I ptr to FITS file to evaluate    */
       else if(fits_strcasecmp(tmpStr3,"stdin://")        == 0)        
 	{
 	  *status = URL_PARSE_ERROR;
-	  ffpmsg("cannot make vaild URL from stdin:// (fits_get_url)");
+	  ffpmsg("cannot make valid URL from stdin:// (fits_get_url)");
 	  *tmpStr1 = *tmpStr2 = 0;
 	}
 
       else if(fits_strcasecmp(tmpStr3,"stdout://")       == 0)       
 	{
 	  *status = URL_PARSE_ERROR;
-	  ffpmsg("cannot make vaild URL from stdout:// (fits_get_url)");
+	  ffpmsg("cannot make valid URL from stdout:// (fits_get_url)");
 	  *tmpStr1 = *tmpStr2 = 0;
 	}
 
       else if(fits_strcasecmp(tmpStr3,"irafmem://")      == 0)      
 	{
 	  *status = URL_PARSE_ERROR;
-	  ffpmsg("cannot make vaild URL from irafmem:// (fits_get_url)");
+	  ffpmsg("cannot make valid URL from irafmem:// (fits_get_url)");
 	  *tmpStr1 = *tmpStr2 = 0;
 	}
 
@@ -6229,7 +6229,7 @@ static grp_stack_data shift_grp_stack(grp_stack* mystack) {
 
 /*--------------------------------------------------------------------------*/
 int fits_url2relurl(char     *refURL, /* I reference URL string             */
-		    char     *absURL, /* I absoulute URL string to process  */
+		    char     *absURL, /* I absolute URL string to process  */
 		    char     *relURL, /* O resulting relative URL string    */
 		    int      *status)
 /*
@@ -6241,8 +6241,8 @@ int fits_url2relurl(char     *refURL, /* I reference URL string             */
   signifiying that they are absolute file paths.
 
   Note that it is possible to make a relative URL from two input URLs
-  (absURL and refURL) that are not compatable. This function does not
-  check to see if the resulting relative URL makes any sence. For instance,
+  (absURL and refURL) that are not compatible. This function does not
+  check to see if the resulting relative URL makes any sense. For instance,
   it is impossible to make a relative URL from the following two inputs:
 
   absURL = ftp://a.b.c.com/x/y/z/foo.fits
@@ -6315,7 +6315,7 @@ int fits_url2relurl(char     *refURL, /* I reference URL string             */
 	  
 	  /* We found a difference in the paths in refURL and absURL.
 	     For every path segment remaining in the refURL string, append
-	     a "../" path segment to the relataive URL relURL.
+	     a "../" path segment to the relative URL relURL.
 	  */
 
 	  for(j = refcount; j < refsize; ++j)
@@ -6436,8 +6436,8 @@ int fits_relurl2url(char     *refURL, /* I reference URL string             */
 	  /*
 	    have to parse the refURL string for the first occurnace of the 
 	    same number of '/' characters as contained in the beginning of
-	    location that is not followed by a greater number of consective 
-	    '/' charaters (yes, that is a confusing statement); this is the 
+	    location that is not followed by a greater number of consecutive 
+	    '/' characters (yes, that is a confusing statement); this is the 
 	    location in the refURL string where the relURL string is to
 	    be appended to form the new absolute URL string
 	   */
@@ -6534,7 +6534,7 @@ int fits_encode_url(char *inpath,  /* I URL  to be encoded                  */
 		    int *status)
      /*
        encode all URL "unsafe" and "reserved" characters using the "%XX"
-       convention, where XX stand for the two hexidecimal digits of the
+       convention, where XX stand for the two hexadecimal digits of the
        encode character's ASCII code.
 
        Note that the outpath length, as specified by the maxlength argument,
@@ -6579,7 +6579,7 @@ unsigned const char isAcceptable[96] =
     {
       a = (unsigned char)*p;
 
-      /* if the charcter requires encoding then process it */
+      /* if the character requires encoding then process it */
 
       if(!( a>=32 && a<128 && (isAcceptable[a-32])))
 	{
@@ -6630,8 +6630,8 @@ int fits_unencode_url(char *inpath,  /* I input URL with encoding            */
      /*
        unencode all URL "unsafe" and "reserved" characters to their actual
        ASCII representation. All tokens of the form "%XX" where XX is the
-       hexidecimal code for an ASCII character, are searched for and
-       translated into the actuall ASCII character (so three chars become
+       hexadecimal code for an ASCII character, are searched for and
+       translated into the actual ASCII character (so three chars become
        1 char).
 
        It is assumed that OUTPATH has enough room to hold the unencoded
@@ -6708,7 +6708,7 @@ int fits_is_url_absolute(char *url)
   char reserved[] = {':',';','/','?','@','&','=','+','$',','};
 
   /*
-    The rule for determing if an URL is relative or absolute is that it (1)
+    The rule for determining if an URL is relative or absolute is that it (1)
     must have a colon ":" and (2) that the colon must appear before any other
     reserved URL character in the URL string. We first see if a colon exists,
     get its position in the string, and then check to see if any of the other

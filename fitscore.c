@@ -537,7 +537,7 @@ void ffgerr(int status,     /* I - error status value */
        strcpy(errtext, "too many HDUs tracked");
        break;
     case 346:
-       strcpy(errtext, "HDU alread tracked");
+       strcpy(errtext, "HDU already tracked");
        break;
     case 347:
        strcpy(errtext, "bad Grouping option");
@@ -1592,7 +1592,7 @@ int ffgthd(char *tmplt, /* I - input header template string */
            int *status)   /* IO - error status   */
 /*
   'Get Template HeaDer'
-  parse a template header line and create a formated
+  parse a template header line and create a formatted
   character string which is suitable for appending to a FITS header 
 */
 {
@@ -2003,7 +2003,7 @@ then values of 'n' less than or equal to n_value will match.
       /* 
 	 ip = index of pattern character being matched
 	 ic = index of keyname character being matched
-	 firstfail = 1 if we fail on the first characteor (0=not)
+	 firstfail = 1 if we fail on the first character (0=not)
       */
       
       for (ip=0, ic=0, firstfail=1;
@@ -2495,7 +2495,7 @@ then values of 'n' less than or equal to n_value will match.
       /* 
 	 ip = index of pattern character being matched
 	 ic = index of keyname character being matched
-	 firstfail = 1 if we fail on the first characteor (0=not)
+	 firstfail = 1 if we fail on the first character (0=not)
       */
       
       for (ip=0, ic=0, firstfail=1;
@@ -2768,7 +2768,7 @@ int ffasfm(char *tform,    /* I - format code from the TFORMn keyword */
                 if (ffc2ii(form, &longval, status) <= 0) /* read decimals */
                 {
                     if (decimals)
-                        *decimals = longval;  /* long to short convertion */
+                        *decimals = longval;  /* long to short conversion */
 
                     if (longval >= width)  /* width < no. of decimals */
                         *status = BAD_TFORM; 
@@ -3287,7 +3287,7 @@ void ffcdsp(char *tform,    /* value of an ASCII table TFORMn keyword */
     return;
 }
 /*--------------------------------------------------------------------------*/
-int ffgcno( fitsfile *fptr,  /* I - FITS file pionter                       */
+int ffgcno( fitsfile *fptr,  /* I - FITS file pointer                       */
             int  casesen,    /* I - case sensitive string comparison? 0=no  */
             char *templt,    /* I - input name of column (w/wildcards)      */
             int  *colnum,    /* O - number of the named column; 1=first col */
@@ -3450,7 +3450,7 @@ void ffcmps(char *templt,   /* I - input template (may have wildcards)      */
   This algorithm is very similar to the way unix filename wildcards
   work except that this first treats a wild card as a literal character
   when looking for a match.  If there is no literal match, then
-  it interpretes it as a wild card.  So the template 'AB*DE'
+  it interprets it as a wild card.  So the template 'AB*DE'
   is considered to be an exact rather than a wild card match to
   the string 'AB*DE'.  The '#' wild card in the template string will 
   match any consecutive string of decimal digits in the colname.
@@ -5640,7 +5640,7 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
       rangecheck = 0;
     }
 
-    /* Special case: interprete 'X' column as 'B' */
+    /* Special case: interpret 'X' column as 'B' */
     if (abs(*tcode) == TBIT)
     {
         *tcode  = *tcode / TBIT * TBYTE;
@@ -5662,7 +5662,7 @@ int ffgcprll( fitsfile *fptr, /* I - FITS file pointer                      */
     else
         *elemnum = firstelem - 1;
 
-    /* interprete complex and double complex as pairs of floats or doubles */
+    /* interpret complex and double complex as pairs of floats or doubles */
     if (abs(*tcode) >= TCOMPLEX)
     {
         if (*tcode > 0)
@@ -6181,11 +6181,11 @@ int ffcmph(fitsfile *fptr,  /* I -FITS file pointer                         */
               }
             }
 
-            /* read arrray of bytes from temporary copy */
+            /* read array of bytes from temporary copy */
             ffmbyt(tptr, readheapstart + offset, REPORT_EOF, status);
             ffgbyt(tptr, nbytes, buffer, status);
 
-            /* write arrray of bytes back to original file */
+            /* write array of bytes back to original file */
             ffmbyt(fptr, writeheapstart + (fptr->Fptr)->heapsize, 
                     IGNORE_EOF, status);
             ffpbyt(fptr, nbytes, buffer, status);
@@ -6923,7 +6923,7 @@ int ffwend(fitsfile *fptr,       /* I - FITS file pointer */
     The END keyword must either be placed immediately after the last
     keyword that was written (as indicated by the headend value), or
     must be in the first 80 bytes of the 2880-byte FITS record immediately 
-    preceeding the data unit, whichever is further in the file. The
+    preceding the data unit, whichever is further in the file. The
     latter will occur if space has been reserved for more header keywords
     which have not yet been written.
     */
@@ -7292,7 +7292,7 @@ int ffghdt(fitsfile *fptr,      /* I - FITS file pointer             */
         return(*status);
 
     if (fptr->HDUposition == 0 && (fptr->Fptr)->headend == 0) { 
-         /* empty primary array is alway an IMAGE_HDU */
+         /* empty primary array is always an IMAGE_HDU */
          *exttype = IMAGE_HDU;
     }
     else {
@@ -7843,7 +7843,7 @@ int ffmnhd(fitsfile *fptr,      /* I - FITS file pointer                    */
        Setting putback = 1 means that we need to test for this case later on.
     */
         
-    if ((fptr->Fptr)->only_one) {  /* if true, name orignally ended with a # */
+    if ((fptr->Fptr)->only_one) {  /* if true, name originally ended with a # */
        slen = strlen(hduname);
        if (hduname[slen - 1] != '#') /* This will fail if real EXTNAME value */
            putback = 1;              /*  ends with 2 # characters. */
@@ -8118,7 +8118,7 @@ int ffiblk(fitsfile *fptr,      /* I - FITS file pointer               */
 
             ffgbyt(fptr, 2880, inbuff,status);  /* read one record */
 
-            /* move forward to the write postion */
+            /* move forward to the write position */
             ffmbyt(fptr, jpoint + ((LONGLONG) nblock * 2880), IGNORE_EOF, status);
 
             ffpbyt(fptr, 2880, inbuff, status);  /* write the record */
@@ -8126,7 +8126,7 @@ int ffiblk(fitsfile *fptr,      /* I - FITS file pointer               */
             jpoint -= 2880;
         }
 
-        /* move back to the write start postion (might be EOF) */
+        /* move back to the write start position (might be EOF) */
         ffmbyt(fptr, insertpt, IGNORE_EOF, status);
 
         for (ii = 0; ii < nblock; ii++)   /* insert correct fill value */
@@ -8818,7 +8818,7 @@ int ffdtyp(const char *cval,  /* I - formatted string representation of the valu
     else if (cval[0] == '(')
         *dtype = 'X';          /* complex datatype "(1.2, -3.4)" */
     else if (strchr(cval,'.'))
-        *dtype = 'F';          /* float usualy contains a decimal point */
+        *dtype = 'F';          /* float usually contains a decimal point */
     else if (strchr(cval,'E') || strchr(cval,'D') )
         *dtype = 'F';          /* exponential contains a E or D */
     else

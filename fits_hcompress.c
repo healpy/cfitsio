@@ -3,7 +3,7 @@ These routines to apply the H-compress compression algorithm to a 2-D Fits
 image were written by R. White at the STScI and were obtained from the STScI at
 http://www.stsci.edu/software/hcompress.html
 
-This source file is a concatination of the following sources files in the
+This source file is a concatenation of the following sources files in the
 original distribution 
  htrans.c 
  digitize.c 
@@ -21,7 +21,7 @@ The following modifications have been made to the original code:
     the same source file
   - changed the first parameter in encode (and in lower level routines from a file stream
     to a char array
-  - modifid the encode routine to return the size of the compressed array of bytes
+  - modified the encode routine to return the size of the compressed array of bytes
   - changed calls to printf and perror to call the CFITSIO ffpmsg routine
   - modified the mywrite routine, and lower level byte writing routines,  to copy 
     the output bytes to a char array, instead of writing them to a file stream
@@ -1190,7 +1190,7 @@ if (bits_to_go2 != 8)
 	
 	if (bits_to_go2 == 8) {
 	    /* special case if nybbles are aligned on byte boundary */
-	    /* this actually seems to make very little differnece in speed */
+	    /* this actually seems to make very little difference in speed */
 	    buffer2 = 0;
 	    for (ii = 0; ii < jj; ii++)
 	    {

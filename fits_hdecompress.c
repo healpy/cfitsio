@@ -3,7 +3,7 @@ These routines to apply the H-compress decompression algorithm to a 2-D Fits
 image were written by R. White at the STScI and were obtained from the STScI at
 http://www.stsci.edu/software/hcompress.html
 
-This source file is a concatination of the following sources files in the
+This source file is a concatenation of the following sources files in the
 original distribution 
   hinv.c 
   hsmooth.c 
@@ -67,7 +67,7 @@ static int qtree_decode64(unsigned char *infile, LONGLONG a[], int n, int nqx, i
 static void start_inputing_bits(void);
 static int input_bit(unsigned char *infile);
 static int input_nbits(unsigned char *infile, int n);
-/*  make input_nybble a separate routine, for added effiency */
+/*  make input_nybble a separate routine, for added efficiency */
 /* #define input_nybble(infile)	input_nbits(infile,4) */
 static int input_nybble(unsigned char *infile);
 static int input_nnybble(unsigned char *infile, int n, unsigned char *array);
@@ -2502,7 +2502,7 @@ static int input_bit(unsigned char *infile)
 
 static int input_nbits(unsigned char *infile, int n)
 {
-    /* AND mask for retreiving the right-most n bits */
+    /* AND mask for retrieving the right-most n bits */
     static int mask[9] = {0, 1, 3, 7, 15, 31, 63, 127, 255};
 
 	if (bits_to_go < n) {

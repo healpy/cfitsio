@@ -1463,7 +1463,7 @@ int imcomp_calc_max_elem (int comptype, int nx, int zbitpix, int blocksize)
     }
      else if (comptype == HCOMPRESS_1)
     {
-        /* Imperical evidence suggests in the worst case, 
+        /* Emperical evidence suggests in the worst case, 
 	   the compressed stream could be up to 10% larger than the original
 	   image.  Add 26 byte overhead, only significant for very small tiles
 	   
@@ -2781,7 +2781,7 @@ int imcomp_convert_tile_tfloat(
 		     /* Summing the 2 quantities may help avoid cases where 2 executions of the program */
 		     /* (perhaps in a multithreaded environoment) end up with exactly the same dither seed */
 		     /* value.  The sum is incremented by the current HDU number in the file to provide */
-		     /* further randomization.  This randomization is desireable if multiple compressed */
+		     /* further randomization.  This randomization is desirable if multiple compressed */
 		     /* images will be summed (or differenced). In such cases, the benefits of dithering */
 		     /* may be lost if all the images use exactly the same sequence of random numbers when */
 		     /* calculating the dithering offsets. */	     
@@ -3777,7 +3777,7 @@ int fits_write_compressed_pixels(fitsfile *fptr, /* I - FITS file pointer   */
             int  *status)     /* IO - error status                           */
 /*
    Write a consecutive set of pixels to a compressed image.  This routine
-   interpretes the n-dimensional image as a long one-dimensional array. 
+   interprets the n-dimensional image as a long one-dimensional array. 
    This is actually a rather inconvenient way to write compressed images in
    general, and could be rather inefficient if the requested pixels to be
    written are located in many different image compression tiles.    
@@ -4924,7 +4924,7 @@ int fits_read_write_compressed_img(fitsfile *fptr,   /* I - FITS file pointer   
               if (tilenul && anynul) {     
                    /* this assumes that the tiled pixels are in the same order
 		      as in the uncompressed FITS image.  This is not necessarily
-		      the case, but it almost alway is in practice.  
+		      the case, but it almost always is in practice.  
 		      Note that null checking is not performed for integer images,
 		      so this could only be a problem for tile compressed floating
 		      point images that use an unconventional tiling pattern.
@@ -4964,7 +4964,7 @@ int fits_read_compressed_pixels(fitsfile *fptr, /* I - FITS file pointer    */
             int  *status)     /* IO - error status                           */
 /*
    Read a consecutive set of pixels from a compressed image.  This routine
-   interpretes the n-dimensional image as a long one-dimensional array. 
+   interprets the n-dimensional image as a long one-dimensional array. 
    This is actually a rather inconvenient way to read compressed images in
    general, and could be rather inefficient if the requested pixels to be
    read are located in many different image compression tiles.    
@@ -6015,7 +6015,7 @@ int imcomp_decompress_tile (fitsfile *infptr,
                }
             }
             else if (datatype == TDOUBLE && (infptr->Fptr)->zbitpix == FLOAT_IMG) {  
-                /*  have to allocat a temporary buffer for the uncompressed data in the */
+                /*  have to allocate a temporary buffer for the uncompressed data in the */
                 /*  case where a gzipped "float" tile is returned as a "double" array   */
                 tempfloat = (float*) malloc (idatalen); 
 
@@ -6124,7 +6124,7 @@ int imcomp_decompress_tile (fitsfile *infptr,
     /* **************************************************************** */
     /* deal with the normal case of a compressed tile of pixels */
     if (nullcheck == 2)  {
-        for (ii = 0; ii < tilelen; ii++)  /* initialize the null flage array */
+        for (ii = 0; ii < tilelen; ii++)  /* initialize the null flag array */
             bnullarray[ii] = 0;
     }
 
@@ -6446,7 +6446,7 @@ int imcomp_decompress_tile (fitsfile *infptr,
             /*
 	       Hcompress is a special case:  ignore any numerical overflow
 	       errors that may have occurred during the integer*4 to integer*2
-	       convertion.  Overflows can happen when a lossy Hcompress algorithm
+	       conversion.  Overflows can happen when a lossy Hcompress algorithm
 	       is invoked (with a non-zero scale factor).  The fffi4i2 routine
 	       clips the returned values to be within the legal I*2 range, so
 	       all we need to is to reset the error status to zero.
@@ -6901,7 +6901,7 @@ int imcomp_test_overlap (
 
 /* 
   test if there are any intersecting pixels between this tile and the section
-  of the image defined by fixel, lpixel, ininc. 
+  of the image defined by fpixel, lpixel, ininc. 
 */
 {
     long imgdim[MAX_COMPRESS_DIM]; /* product of preceding dimensions in the */
@@ -8007,7 +8007,7 @@ int fits_compress_table(fitsfile *infptr, fitsfile *outfptr, int *status)
   improves the gzip compression of floating-point arrays.
    
   2. Compress the contiguous array of bytes in each column using the specified
-  compression method.  If no method is specifed, then a default method for that
+  compression method.  If no method is specified, then a default method for that
   data type is chosen. 
   
   3. Store the compressed stream of bytes into a column that has the same name
@@ -8021,7 +8021,7 @@ int fits_compress_table(fitsfile *infptr, fitsfile *outfptr, int *status)
   and the second is the set of pointers to the compressed VLAs in the output table.
   The latter set of pointers is used to reconstruct table when it is uncompressed,
   so that the heap has exactly the same structure as in the original file.  The 2
-  sets of pointers are concatinated together, compressed with gzip, and written to
+  sets of pointers are concatenated together, compressed with gzip, and written to
   the output table.  When reading the compressed table, the only VLA that is directly
   visible is this compressed array of descriptors.  One has to uncompress this array
   to be able to to read all the descriptors to the individual VLAs in the column.  
@@ -8115,7 +8115,7 @@ int fits_compress_table(fitsfile *infptr, fitsfile *outfptr, int *status)
     }
    
     /* Check if the chunk size has been specified with the FZTILELN keyword. */
-    /* If not, calculate a default number of rows per chunck, */
+    /* If not, calculate a default number of rows per chunk, */
 
     tstatus = 0;
     if (fits_read_key(infptr, TLONG, "FZTILELN", &rowspertile, NULL, &tstatus)) {
@@ -8281,7 +8281,7 @@ int fits_compress_table(fitsfile *infptr, fitsfile *outfptr, int *status)
         ffmbyt(infptr, datastart, 0, status);
 
         /* ================================================================================*/
-        /*  First, transpose this chunck from row-major order to column-major order  */
+        /*  First, transpose this chunk from row-major order to column-major order  */
 	/*  At the same time, shuffle the bytes in each datum, if doing GZIP_2 compression */
         /* ================================================================================*/
 
@@ -8456,7 +8456,7 @@ int fits_compress_table(fitsfile *infptr, fitsfile *outfptr, int *status)
                            (int) compmemlen, 32);
 		        } else {
 			  /* this should not happen */
-			  ffpmsg(" Error: cannot compress this column type with the RICE algorthm");
+			  ffpmsg(" Error: cannot compress this column type with the RICE algorithm");
 			  free(vlamem); free(cdescript); free(cm_buffer); free(cvlamem);
 			  *status = DATA_COMPRESSION_ERR;
 			  return(*status);
@@ -8476,7 +8476,7 @@ int fits_compress_table(fitsfile *infptr, fitsfile *outfptr, int *status)
 	    		    &cvlamem,  &compmemlen, realloc, &dlen, status);        
 		    } else {
 			  /* this should not happen */
-			  ffpmsg(" Error: unknown compression algorthm");
+			  ffpmsg(" Error: unknown compression algorithm");
 			  free(vlamem); free(cdescript); free(cm_buffer); free(cvlamem);
 			  *status = DATA_COMPRESSION_ERR;
 			  return(*status);
@@ -8608,7 +8608,7 @@ int fits_compress_table(fitsfile *infptr, fitsfile *outfptr, int *status)
   	            dlen = fits_rcomp_byte ((signed char *)(cm_buffer + cm_colstart[ii]), datasize, (unsigned char *) cvlamem,
                        datasize * 2, 32);
 	        } else {  /* this should not happen */
-                    ffpmsg(" Error: cannot compress this column type with the RICE algorthm");
+                    ffpmsg(" Error: cannot compress this column type with the RICE algorithm");
 		    free(cvlamem);  free(cm_buffer);
 	            *status = DATA_COMPRESSION_ERR;
 	            return(*status);
@@ -8805,7 +8805,7 @@ int fits_uncompress_table(fitsfile *infptr, fitsfile *outfptr, int *status)
     fits_modify_name(outfptr, "ZDATASUM", "DATASUM", &tstatus);
 
     /* ================================================================================== */
-    /* determine compression paramters for each column and write column-specific keywords */
+    /* determine compression parameters for each column and write column-specific keywords */
     /* ================================================================================== */
     for (ii = 0; ii < ncols; ii++) {
 
@@ -9267,7 +9267,7 @@ int fits_uncompress_table(fitsfile *infptr, fitsfile *outfptr, int *status)
 					(int) vlalen, 32);
 				} else {
 				    /* this should not happen */
-				    ffpmsg(" Error: cannot uncompress this column type with the RICE algorthm");
+				    ffpmsg(" Error: cannot uncompress this column type with the RICE algorithm");
 
 				    *status = DATA_DECOMPRESSION_ERR;
 			            free(uncompressed_vla); free(compressed_vla); free(rm_buffer);  free(cm_buffer);
@@ -9292,7 +9292,7 @@ int fits_uncompress_table(fitsfile *infptr, fitsfile *outfptr, int *status)
 
 			    } else {
 				/* this should not happen */
-				ffpmsg(" Error: unknown compression algorthm");
+				ffpmsg(" Error: unknown compression algorithm");
 			        free(uncompressed_vla); free(compressed_vla); free(rm_buffer);  free(cm_buffer);
 				*status = DATA_COMPRESSION_ERR;
 				return(*status);
@@ -9574,7 +9574,7 @@ in place. This will overwrite the input array with the new longer array starting
 at the same memory location.  
 
 Note that aliasing the same memory location with pointers of different datatypes is
-not allowed in strict ANSI C99, however it is  used here for efficency. In principle,
+not allowed in strict ANSI C99, however it is  used here for efficiency. In principle,
 one could simply copy the input array in reverse order to the output array,
 but this only works if the compiler performs the operation in strict order.  Certain
 compiler optimization techniques may vioate this assumption.  Therefore, we first
@@ -9637,7 +9637,7 @@ in place. This will overwrite the input array with the new longer array starting
 at the same memory location.  
 
 Note that aliasing the same memory location with pointers of different datatypes is
-not allowed in strict ANSI C99, however it is  used here for efficency. In principle,
+not allowed in strict ANSI C99, however it is  used here for efficiency. In principle,
 one could simply copy the input array in reverse order to the output array,
 but this only works if the compiler performs the operation in strict order.  Certain
 compiler optimization techniques may vioate this assumption.  Therefore, we first
@@ -9701,7 +9701,7 @@ in place. This will overwrite the input array with the new longer array starting
 at the same memory location.  
 
 Note that aliasing the same memory location with pointers of different datatypes is
-not allowed in strict ANSI C99, however it is  used here for efficency. In principle,
+not allowed in strict ANSI C99, however it is  used here for efficiency. In principle,
 one could simply copy the input array in reverse order to the output array,
 but this only works if the compiler performs the operation in strict order.  Certain
 compiler optimization techniques may vioate this assumption.  Therefore, we first
@@ -9765,7 +9765,7 @@ in place. This will overwrite the input array with the new longer array starting
 at the same memory location.  
 
 Note that aliasing the same memory location with pointers of different datatypes is
-not allowed in strict ANSI C99, however it is  used here for efficency. In principle,
+not allowed in strict ANSI C99, however it is  used here for efficiency. In principle,
 one could simply copy the input array in reverse order to the output array,
 but this only works if the compiler performs the operation in strict order.  Certain
 compiler optimization techniques may vioate this assumption.  Therefore, we first
@@ -9829,7 +9829,7 @@ in place. This will overwrite the input array with the new longer array starting
 at the same memory location.  
 
 Note that aliasing the same memory location with pointers of different datatypes is
-not allowed in strict ANSI C99, however it is  used here for efficency. In principle,
+not allowed in strict ANSI C99, however it is  used here for efficiency. In principle,
 one could simply copy the input array in reverse order to the output array,
 but this only works if the compiler performs the operation in strict order.  Certain
 compiler optimization techniques may vioate this assumption.  Therefore, we first

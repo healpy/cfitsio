@@ -520,7 +520,7 @@ int ffpkls( fitsfile *fptr,     /* I - FITS file pointer        */
 	
         if (commlen > 0 && remain + nquote < 69 && remain + nquote + commlen > 65) 
 	{
-            if (nchar > 18) { /* only false if there are a rediculous number of quotes in the string */
+            if (nchar > 18) { /* only false if there are a ridiculous number of quotes in the string */
 	        nchar = remain - 15;  /* force continuation onto another card, so that */
 		                      /* there is room for a comment up to 47 chara long */
                 nocomment = 1;  /* don't write the comment string this time */
@@ -3034,7 +3034,7 @@ int ffs2c(const char *instr, /* I - null terminated input string  */
         if (instr[ii] == '\'')
         {
             jj++;
-            outstr[jj]='\'';   /* duplicate any apostrophies in the input */
+            outstr[jj]='\'';   /* duplicate any apostrophes in the input */
         }
     }
 
@@ -3152,7 +3152,7 @@ int ffr2e(float fval,  /* I - value to be converted to a string */
         }
         else if ( !strchr(cval, '.') && !strchr(cval,'E') && strlen(cval) < FLEN_VALUE-1 )
         {
-            /* add decimal point if necessary to distinquish from integer */
+            /* add decimal point if necessary to distinguish from integer */
             strcat(cval, ".");
         }
     }
@@ -3260,7 +3260,7 @@ int ffd2e(double dval,  /* I - value to be converted to a string */
         }
         else if ( !strchr(cval, '.') && !strchr(cval,'E') && strlen(cval) < FLEN_VALUE-1)
         {
-            /* add decimal point if necessary to distinquish from integer */
+            /* add decimal point if necessary to distinguish from integer */
             strcat(cval, ".");
         }
     }

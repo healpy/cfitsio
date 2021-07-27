@@ -27,7 +27,7 @@
 24-Oct-98: syntax change: empty lines and lines with only whitespaces are 
 		written to FITS files as blank keywords (if inside group/hdu
 		definition). Previously lines had to have at least 8 spaces.
-		Please note, that due to pecularities of CFITSIO if the
+		Please note, that due to peculiarities of CFITSIO if the
 		last keyword(s) defined for given HDU are blank keywords
 		consisting of only 80 spaces, then (some of) those keywords
 		may be silently deleted by CFITSIO.
@@ -466,7 +466,7 @@ int	ngp_extract_tokens(NGP_RAW_LINE *cl)
           if ('\'' == *p)			/* we have found doublequote */
             { if ((0 == p[1]) || ('\n' == p[1]))/* doublequote is the last character in line */
                 { *s = 0; return(NGP_OK); }
-              if (('\t' == p[1]) || (' ' == p[1])) /* duoblequote was string terminator */
+              if (('\t' == p[1]) || (' ' == p[1])) /* doublequote was string terminator */
                 { *s = 0; p++; break; }
               if ('\'' == p[1]) p++;		/* doublequote is inside string, convert "" -> " */ 
             }

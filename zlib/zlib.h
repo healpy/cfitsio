@@ -962,7 +962,7 @@ ZEXTERN int ZEXPORT inflateBackInit OF((z_streamp strm, int windowBits,
      See inflateBack() for the usage of these routines.
 
      inflateBackInit will return Z_OK on success, Z_STREAM_ERROR if any of
-   the paramaters are invalid, Z_MEM_ERROR if the internal state could not be
+   the parameters are invalid, Z_MEM_ERROR if the internal state could not be
    allocated, or Z_VERSION_ERROR if the version of the library does not match
    the version of the header file.
 */
@@ -1325,7 +1325,7 @@ ZEXTERN int ZEXPORT gzflush OF((gzFile file, int flush));
      If the flush parameter is Z_FINISH, the remaining data is written and the
    gzip stream is completed in the output.  If gzwrite() is called again, a new
    gzip stream will be started in the output.  gzread() is able to read such
-   concatented gzip streams.
+   concatenated gzip streams.
 
      gzflush should be called only when strictly necessary because it will
    degrade compression if called too often.

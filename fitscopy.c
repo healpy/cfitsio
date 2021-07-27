@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
       fits_close_file(infptr, &status);
     }
 
-    /* if error occured, print out error message */
+    /* if error occurred, print out error message */
     if (status) fits_report_error(stderr, status);
     return(status);
 }

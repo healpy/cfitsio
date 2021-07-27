@@ -313,7 +313,7 @@ void selectrows( void )
         printf("Error: expected to find a binary table in this HDU\n");
         return;
     }
-    /* move to the last (2rd) HDU in the output file */
+    /* move to the last (2nd) HDU in the output file */
     if ( fits_movabs_hdu(outfptr, 2, &hdutype, &status) )
          printerror( status );
 

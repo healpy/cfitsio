@@ -13,7 +13,7 @@
 #include "bzlib.h"
 #endif
 
-/* prototype for .Z file uncompression function in zuncompress.c */
+/* prototype for .Z file decompression function in zuncompress.c */
 int zuncompress2mem(char *filename, 
              FILE *diskfile, 
              char **buffptr, 
@@ -23,7 +23,7 @@ int zuncompress2mem(char *filename,
              int *status);
 
 #if HAVE_BZIP2
-/* prototype for .bz2 uncompression function (in this file) */
+/* prototype for .bz2 decompression function (in this file) */
 void bzip2uncompress2mem(char *filename, FILE *diskfile, int hdl,
                          size_t* filesize, int* status);
 #endif
@@ -198,7 +198,7 @@ int mem_openmem(void **buffptr,   /* I - address of memory pointer          */
     if (*handle == -1)
        return(TOO_MANY_FILES);    /* too many files opened */
 
-    memTable[ii].memaddrptr = (char **) buffptr; /* pointer to start addres */
+    memTable[ii].memaddrptr = (char **) buffptr; /* pointer to start address */
     memTable[ii].memsizeptr = buffsize;     /* allocated size of memory */
     memTable[ii].deltasize = deltasize;     /* suggested realloc increment */
     memTable[ii].fitsfilesize = *buffsize;  /* size of FITS file (upper limit) */
@@ -622,7 +622,7 @@ int mem_compress_open(char *filename, int rwmode, int *hdl)
   But one must allow for the case of very small files, where the
   gzipped file may actually be larger then the original uncompressed file.
   Therefore, only perform the modulo 2^32 correction test if the compressed 
-  file is greater than 10,000 bytes in size.  (Note: this threhold would
+  file is greater than 10,000 bytes in size.  (Note: this threshold would
   fail only if the original file was greater than 2^32 bytes in size AND gzip 
   was able to compress it by more than a factor of 400,000 (!) which seems
   highly unlikely.)
@@ -791,7 +791,7 @@ int mem_compress_stdin_open(char *filename, int rwmode, int *hdl)
 int mem_iraf_open(char *filename, int rwmode, int *hdl)
 /*
   This routine creates an empty memory buffer, then calls iraf2mem to
-  open the IRAF disk file and convert it to a FITS file in memeory.
+  open the IRAF disk file and convert it to a FITS file in memory.
 */
 {
     int status;
@@ -967,7 +967,7 @@ int mem_rawfile_open(char *filename, int rwmode, int *hdl)
         return(status);
     }
 
-    /* create a memory file with corrct size for the FITS converted raw file */
+    /* create a memory file with correct size for the FITS converted raw file */
     status = mem_createmem(filesize, hdl);
     if (status)
     {

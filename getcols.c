@@ -71,7 +71,7 @@ int ffgcls( fitsfile *fptr,   /* I - FITS file pointer                       */
             int  *status)     /* IO - error status                           */
 /*
   Read an array of string values from a column in the current FITS HDU.
-  Returns a formated string value, regardless of the datatype of the column
+  Returns a formatted string value, regardless of the datatype of the column
 */
 {
     int tcode, hdutype, tstatus, scaled, intcol, dwidth, nulwidth, ll, dlen;
@@ -189,7 +189,7 @@ int ffgcls( fitsfile *fptr,   /* I - FITS file pointer                       */
          if (!cform[0])
              strcpy(cform, "%14.6E");
 
-         /* write the formated string for each value:  "(real,imag)" */
+         /* write the formatted string for each value:  "(real,imag)" */
          jj = 0;
          for (ii = 0; ii < nelem; ii++)
          {
@@ -281,7 +281,7 @@ int ffgcls( fitsfile *fptr,   /* I - FITS file pointer                       */
          if (!cform[0])
             strcpy(cform, "%23.15E");
 
-         /* write the formated string for each value:  "(real,imag)" */
+         /* write the formatted string for each value:  "(real,imag)" */
          jj = 0;
          for (ii = 0; ii < nelem; ii++)
          {
@@ -346,7 +346,7 @@ int ffgcls( fitsfile *fptr,   /* I - FITS file pointer                       */
          return(*status);
       }
 
-      /* write the formated string for each value */
+      /* write the formatted string for each value */
       if (nulval) {
           strncpy(tmpnull, nulval,79);
           tmpnull[79]='\0'; /* In case len(nulval) >= 79 */
@@ -404,7 +404,7 @@ int ffgcls( fitsfile *fptr,   /* I - FITS file pointer                       */
          return(*status);
       }
 
-      /* write the formated string for each value */
+      /* write the formatted string for each value */
       if (nulval) {
           strncpy(tmpnull, nulval, 79);
           tmpnull[79]='\0'; /* In case len(nulval) >= 79 */
@@ -562,7 +562,7 @@ int ffgcls( fitsfile *fptr,   /* I - FITS file pointer                       */
           nulwidth = 1;
       }
 
-      /* write the formated string for each value */
+      /* write the formatted string for each value */
       for (ii = 0; ii < nelem; ii++)
       {
            if (tcode == TBIT)
