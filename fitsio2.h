@@ -103,6 +103,10 @@ extern int Fitsio_Pthread_Status;
 #define BYTESWAPPED TRUE
 #define LONGSIZE 64   
 
+#elif defined(__loongarch64)
+#define BYTESWAPPED TRUE
+#define LONGSIZE 64 
+
 #elif defined(_SX)             /* Nec SuperUx */
 
 #define BYTESWAPPED FALSE
