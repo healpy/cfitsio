@@ -137,6 +137,12 @@ extern int Fitsio_Pthread_Status;
 #    error "can't handle long size given by _MIPS_SZLONG"
 #  endif
 
+#elif defined(__loongarch64)
+
+#define BYTESWAPPED TRUE
+#define MACHINE OTHERTYPE
+#define LONGSIZE 64
+
 #elif defined(__riscv)
 
 /* RISC-V is always little endian */
